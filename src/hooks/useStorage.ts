@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StorageService, StoredData } from '../services/storage/StorageService';
+import { StorageService } from '../services/storage/StorageService';
 import { Entry } from '../types/Entry';
 
 export const useStorage = () => {

@@ -30,24 +30,26 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
   // Filtrar entradas por período
   const getFilteredEntries = () => {
     const now = new Date();
-    
+
     switch (selectedPeriod) {
       case 'week':
-        const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-        const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
-        return entries.filter(entry => {
-          const entryDate = new Date(entry.date);
-          return entryDate >= weekStart && entryDate <= weekEnd;
-        });
-      
+        {
+          const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+          const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+          return entries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= weekStart && entryDate <= weekEnd;
+          });
+        }
       case 'month':
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        return entries.filter(entry => {
-          const entryDate = new Date(entry.date);
-          return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
-        });
-      
+        {
+          const currentMonth = now.getMonth();
+          const currentYear = now.getFullYear();
+          return entries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+          });
+        }
       default:
         return entries;
     }
@@ -98,7 +100,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
 
   const renderEntry = ({ item }: { item: Entry }) => {
     const entryDate = new Date(item.date);
-    
+
     return (
       <View style={styles.entryCard}>
         <View style={styles.entryHeader}>
@@ -153,7 +155,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
       <Ionicons name="calendar-outline" size={48} color="#ccc" />
       <Text style={styles.emptyText}>{t('history.empty.title')}</Text>
       <Text style={styles.emptySubtext}>
-        {selectedPeriod === 'all' 
+        {selectedPeriod === 'all'
           ? t('history.empty.subtitle')
           : selectedPeriod === 'week' ? t('history.empty.subtitlePeriod') : t('history.empty.subtitleMonth')
         }
@@ -181,7 +183,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
               {t('history.filters.all')}
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[
               styles.filterButton,
@@ -196,7 +198,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
               {t('history.filters.week')}
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[
               styles.filterButton,
@@ -210,6 +212,13 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
             ]}>
               {t('history.filters.month')}
             </Text>
+            {/* Go Back Button */}
+            <TouchableOpacity
+              style={styles.goBackButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="arrow-back" size={24} color="#6366f1" />
+            </TouchableOpacity>
           </TouchableOpacity>
         </View>
       </View>
@@ -377,5 +386,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9ca3af',
     textAlign: 'center',
+  },
+  goBackButton: {
+    marginRight: 12,
+    padding: 4,
   },
 });

@@ -69,6 +69,7 @@ try {
         t('common.error'),
         error as string || 'Failed to save entry'
       );
+      console.log('Error saving entry:', error, errors);
     }
   };
 

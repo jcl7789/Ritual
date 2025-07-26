@@ -2,7 +2,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EncryptionService } from './EncryptionService';
-import { StorageService, StoredData } from './StorageService';
+import { StorageService } from './StorageService';
 import { ValidationService } from '../validation/ValidationService';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -60,6 +60,7 @@ export class BackupService {
     includeSettings: boolean = true,
     compress: boolean = true
   ): Promise<BackupResult> {
+    console.log('Creating full backup...', includeSettings, compress);
     try {
       await this.initializeBackupSystem();
       
@@ -370,6 +371,7 @@ export class BackupService {
       return btoa(data);
     } catch (error) {
       console.warn('Compression failed, using original data');
+      console.error('Compression error:', error);
       return data;
     }
   }
@@ -382,6 +384,7 @@ export class BackupService {
       return atob(data);
     } catch (error) {
       // Si falla la descompresión, asumir que no está comprimido
+        console.warn('Decompression failed, using original data', error);
       return data;
     }
   }

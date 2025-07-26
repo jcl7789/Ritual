@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { ActivityType } from '../types/Entry';
 
 // Schema para crear nueva entrada
 export const createEntrySchema = yup.object({

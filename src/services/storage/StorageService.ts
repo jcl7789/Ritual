@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EncryptionService } from './EncryptionService';
 import { Entry } from '../../types/Entry';
-import { User, UserStats } from '../../types/User';
+// import { User, UserStats } from '../../types/User';
 
 export interface StoredData {
   entries: Entry[];
@@ -78,7 +78,7 @@ export class StorageService {
         entries: decryptedData.entries,
         settings: decryptedData.settings,
         user: decryptedData.user,
-      }), decryptedData.metadata.dataHash)) {
+      }), currentHash)) {
         console.warn('Data integrity check failed, using backup or default data');
         return await this.loadBackupData() || this.getDefaultData();
       }

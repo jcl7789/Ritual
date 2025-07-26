@@ -29,6 +29,8 @@ export default function SettingsScreen() {
   const { loading, error, stats } = useSelector((state: RootState) => state.entries);
   const [notifications, setNotifications] = useState(true);
 
+  // const [error, setError] = useState<string | null>(null); // unused
+
   const handleCreateBackup = async () => {
     try {
       await dispatch(createBackupAsync()).unwrap();
@@ -65,6 +67,8 @@ export default function SettingsScreen() {
       );
     }
   };
+
+  // const [fileName, setFileName] = useState<string>(''); // unused
 
   const handleImportData = async () => {
     Alert.alert(
