@@ -27,7 +27,7 @@ describe('generateShortId', () => {
 describe('generateTimestampId', () => {
   it('should generate an ID with timestamp and random part', () => {
     const id = generateTimestampId();
-    expect(id).toMatch(/^[0-9a-z]+\-[0-9a-z]{6}$/i);
+    expect(id).toMatch(/^[0-9a-z]+-[0-9a-z]{6}$/i);
   });
   it('should generate unique timestamp IDs', () => {
     const id1 = generateTimestampId();
