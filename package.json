@@ -8,7 +8,14 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
-    "lint": "eslint . --ext .ts,.tsx"
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "clean": "rimraf dist && rimraf build"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
