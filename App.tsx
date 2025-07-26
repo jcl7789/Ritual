@@ -1,18 +1,101 @@
 // App.tsx
 
-import React from 'react';
-import { Provider } from 'react-redux';
+import React, { useEffect } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
-import { store } from './web/store/store';
-import Navigation from './web/components/Navigation';
-import './web/locales/i18n'; // Inicializar i18n
+import { AppDispatch, RootState, store } from './src/store/store';
+import Navigation from './src/components/navigation/Navigation';
+import './src/locales/i18n'; // Inicializar i18n
+import { useTranslation } from 'react-i18next';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { initializeApp } from './src/store/slices/entriesSlice';
+
+// Componente para manejar la inicialización
+function AppInitializer() {
+  const { t } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+  const { initialized, loading, error } = useSelector((state: RootState) => state.entries);
+
+  useEffect(() => {
+    if (!initialized) {
+      dispatch(initializeApp());
+    }
+  }, [dispatch, initialized]);
+
+  // Pantalla de carga mientras se inicializa la app
+  if (!initialized || loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#6366f1" />
+        <Text style={styles.loadingText}>{t('app.loading.title')}</Text>
+      </View>
+    );
+  }
+
+  // Pantalla de error si no se puede inicializar
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorTitle}>{t('app.loading.error.title')}</Text>
+        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorSubtext}>
+          {t('app.loading.error.message')}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      <Navigation />
+    </NavigationContainer>
+  );
+}
 
 export default function App() {
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Navigation />
-      </NavigationContainer>
+      <AppInitializer />
     </Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 18,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    padding: 20,
+  },
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ef4444',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#6b7280',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    color: '#9ca3af',
+    textAlign: 'center',
+  },
+});
