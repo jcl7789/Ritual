@@ -1,0 +1,21 @@
+// Configuración de TypeScript para el proyecto backend.
+// Esto le dice al compilador de TypeScript cómo procesar tus archivos.
+{
+  "compilerOptions": {
+    "target": "es2024", // Generar código JavaScript compatible con ES2024 (última versión)
+    "module": "commonjs", // Usar el sistema de módulos CommonJS
+    "rootDir": "./src", // Directorio raíz de los archivos fuente
+    "outDir": "./dist", // Directorio de salida para los archivos compilados
+    "esModuleInterop": true, // Habilitar la interoperabilidad entre módulos CommonJS y ES
+    "forceConsistentCasingInFileNames": true, // Forzar la consistencia en el uso de mayúsculas/minúsculas en los nombres de archivo
+    "strict": true, // Habilitar todas las opciones de verificación de tipo estricta
+    "skipLibCheck": true, // Omitir la verificación de tipos de los archivos de declaración de la librería
+    "resolveJsonModule": true, // Permitir la importación de módulos JSON
+    "baseUrl": ".", // Directorio base para la resolución de módulos
+    "paths": {
+      "@shared/*": ["../shared/*"] // Mapeo de rutas para importar tipos compartidos
+    }
+  },
+  "include": ["src/**/*.ts", "../shared/**/*.ts"], // Incluye también los archivos .ts en el directorio shared
+  "exclude": ["node_modules"] // Excluir el directorio node_modules
+}
