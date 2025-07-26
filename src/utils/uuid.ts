@@ -15,7 +15,11 @@ export function generateUUID(): string {
  * Genera un ID más corto para uso interno (12 caracteres)
  */
 export function generateShortId(): string {
-  return Math.random().toString(36).substring(2, 14);
+  let id = Math.random().toString(36).substring(2, 14);
+  if (id.length < 12) {
+    id = id.padEnd(12, '0');
+  }
+  return id;
 }
 
 /**

@@ -53,8 +53,24 @@
     "eslint-config-prettier": "^10.1.8",
     "jest": "^29.7.0",
     "prettier": "^3.6.2",
+    "ts-jest": "^29.4.0",
     "typescript": "~5.8.3"
   },
   "private": true,
-  "type": "module"
+  "type": "module",
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[tj]s?(x)"
+    ],
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
+    "transform": {},
+    "globals": {},
+    "preset": "ts-jest/presets/js-with-ts-esm",
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    }
+  }
 }
