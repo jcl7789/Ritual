@@ -4,6 +4,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 import HomeScreen from '../screens/HomeScreen';
 import HistoryScreen from '../screens/HistoryScreen';
@@ -36,6 +37,8 @@ const getTabBarIcon = (routeName: keyof TabParamList) => {
 
 // Navegación por tabs
 function TabNavigator() {
+  const { t } = useTranslation();
+  
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -53,12 +56,12 @@ function TabNavigator() {
       <Tab.Screen 
         name="Home" 
         component={HomeScreen}
-        options={{ tabBarLabel: 'Inicio' }}
+        options={{ tabBarLabel: t('navigation.home') }}
       />
       <Tab.Screen 
         name="History" 
         component={HistoryScreen}
-        options={{ tabBarLabel: 'Historial' }}
+        options={{ tabBarLabel: t('navigation.history') }}
       />
     </Tab.Navigator>
   );
@@ -66,6 +69,8 @@ function TabNavigator() {
 
 // Navegación principal con stack
 export default function Navigation() {
+  const { t } = useTranslation();
+  
   return (
     <Stack.Navigator>
       <Stack.Screen 
@@ -77,7 +82,7 @@ export default function Navigation() {
         name="AddEntry" 
         component={AddEntryScreen}
         options={{ 
-          title: 'Nueva Entrada',
+          title: t('addEntry.title'),
           presentation: 'modal',
           headerStyle: {
             backgroundColor: '#6366f1',

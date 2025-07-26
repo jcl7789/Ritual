@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { store } from './web/store/store';
 import Navigation from './web/components/Navigation';
-import './web/locales'; // Inicializar i18n
+import './web/locales/i18n'; // Inicializar i18n
 
 export default function App() {
   return (

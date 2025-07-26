@@ -29,6 +29,7 @@
     "react-hook-form": "^7.61.1",
     "react-i18next": "^15.6.1",
     "react-native": "0.79.5",
+    "react-native-country-flag": "^2.0.2",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-web": "^0.20.0",

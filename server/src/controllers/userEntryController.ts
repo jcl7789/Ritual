@@ -1,7 +1,7 @@
 // Contiene la lógica de negocio para manejar las operaciones CRUD de las entradas dentro de un usuario.
 import { Request, Response } from 'express';
 import User, { UserDocument } from '../models/User'; // Importa el modelo User y UserDocument
-import { CreateEntryInput, EntryFilters, Entry, EntrySubdocument, SavedEntry } from '@shared/types'; // Importa las interfaces compartidas y EntrySubdocument
+import { CreateEntryInput, EntryFilters, Entry } from '@shared/types'; // Importa las interfaces compartidas y EntrySubdocument
 import mongoose from 'mongoose'; // Necesario para ObjectId
 
 /**
@@ -48,11 +48,11 @@ export const createEntryForUser = async (req: Request<{ userId: string }, {}, En
     await user.save(); // Guarda el usuario con la nueva entrada
 
     // Obtener la entrada recién guardada con su _id generado por Mongoose
-    const savedEntry = user.entries[user.entries.length - 1] as EntrySubdocument;
+    const savedEntry = user.entries[user.entries.length - 1] as Entry;
 
     // Responde con la entrada creada y un estado 201 (Creado)
     // Aseguramos que el 'id' de la respuesta sea el '_id' generado por Mongoose
-    res.status(201).json({ ...savedEntry.toObject(), id: savedEntry._id.toString() });
+    res.status(201).json({savedEntry});
   } catch (error: any) {
     // Manejo de errores
     console.error('Error al crear la entrada para el usuario:', error);
@@ -77,8 +77,8 @@ export const getEntriesForUser = async (req: Request<{ userId: string }, {}, {},
       return res.status(404).json({ message: 'Usuario no encontrado.' });
     }
 
-    // Asegura que filteredEntries sea un array de EntrySubdocument
-    let filteredEntries: EntrySubdocument[] = user.entries as EntrySubdocument[];
+    // Asegura que filteredEntries sea un array de Entry
+    let filteredEntries: Entry[] = user.entries as Entry[];
 
     // Aplicar filtros
     if (startDate) {
@@ -110,8 +110,7 @@ export const getEntriesForUser = async (req: Request<{ userId: string }, {}, {},
 
     // Mapear _id a id para que coincida con la interfaz Entry
     const entriesResponse = filteredEntries.map(entry => ({
-      ...entry.toObject(), // Ahora toObject() es reconocido
-      id: entry._id.toString() // Mapea _id a id
+      ...entry
     }));
 
     res.status(200).json(entriesResponse);
@@ -138,7 +137,7 @@ export const getEntryForUserById = async (req: Request<{ userId: string, entryId
     }
 
     // Busca la entrada por su _id dentro del array de entradas del usuario
-    const entry: EntrySubdocument | null = user.entries.id(entryId) as EntrySubdocument | null; // Casteo a EntrySubdocument
+    const entry: Entry | null = user.entries.id(entryId) as Entry | null; // Casteo a EntrySubdocument
 
     if (!entry) {
       return res.status(404).json({ message: 'Entrada no encontrada para este usuario.' });
@@ -146,8 +145,7 @@ export const getEntryForUserById = async (req: Request<{ userId: string, entryId
 
     // Mapear _id a id para que coincida con la interfaz Entry
     const entryResponse: Entry = {
-      ...entry.toObject(),
-      id: entry._id.toString()
+      ...entry
     };
 
     res.status(200).json(entryResponse);
@@ -174,7 +172,7 @@ export const updateEntryForUser = async (req: Request<{ userId: string, entryId:
       return res.status(404).json({ message: 'Usuario no encontrado.' });
     }
 
-    const entry: EntrySubdocument | null = user.entries.id(entryId) as EntrySubdocument | null; // Casteo a EntrySubdocument
+    const entry: Entry | null = user.entries.id(entryId) as Entry | null; // Casteo a EntrySubdocument
 
     if (!entry) {
       return res.status(404).json({ message: 'Entrada no encontrada para actualizar.' });
@@ -188,8 +186,7 @@ export const updateEntryForUser = async (req: Request<{ userId: string, entryId:
 
     // Mapear _id a id para que coincida con la interfaz Entry
     const updatedEntryResponse: Entry = {
-      ...entry.toObject(),
-      id: entry._id.toString()
+      ...entry
     };
 
     res.status(200).json(updatedEntryResponse);

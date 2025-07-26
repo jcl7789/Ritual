@@ -1,0 +1,90 @@
+{
+  "app": {
+    "name": "Ritual",
+    "subtitle": "Tu diario personal"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "history": "Historial",
+    "profile": "Perfil"
+  },
+  "home": {
+    "title": "Ritual",
+    "subtitle": "Tu diario personal",
+    "stats": {
+      "total": "Total",
+      "thisMonth": "Este mes",
+      "average": "Promedio"
+    },
+    "addEntry": "Nueva Entrada",
+    "recentEntries": "Recientes",
+    "empty": {
+      "title": "Aún no tienes entradas",
+      "subtitle": "Comienza registrando tu primera actividad"
+    }
+  },
+  "addEntry": {
+    "title": "Nueva Entrada",
+    "activityType": "¿Qué tipo de actividad?",
+    "partner": "Pareja (opcional)",
+    "partnerPlaceholder": "Nombre de tu pareja",
+    "duration": "Duración en minutos (opcional)",
+    "durationPlaceholder": "Ej: 30",
+    "satisfaction": "¿Cómo te sentiste?",
+    "satisfactionLabel": "{{stars}} de 5 estrellas",
+    "notes": "Notas (opcional)",
+    "notesPlaceholder": "Cualquier detalle que quieras recordar...",
+    "save": "Guardar Entrada",
+    "success": {
+      "title": "Entrada guardada",
+      "message": "Tu nueva entrada ha sido registrada exitosamente"
+    },
+    "error": {
+      "activityRequired": "Por favor selecciona un tipo de actividad"
+    }
+  },
+  "history": {
+    "title": "Historial",
+    "filters": {
+      "all": "Todo",
+      "week": "Semana",
+      "month": "Mes"
+    },
+    "empty": {
+      "title": "No hay entradas",
+      "subtitle": "Aún no has registrado ninguna actividad",
+      "subtitlePeriod": "No hay entradas para este período",
+      "subtitleMonth": "No hay entradas para este mes"
+    },
+    "delete": {
+      "title": "Eliminar entrada",
+      "message": "¿Estás seguro de que quieres eliminar esta entrada?",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    },
+    "time": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "with": "Con {{partner}}"
+    }
+  },
+  "activities": {
+    "sex": "Relación sexual",
+    "anal": "Sexo anal",
+    "masturbation": "Masturbación",
+    "oral": "Sexo oral",
+    "foreplay": "Juegos previos",
+    "other": "Otro"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "minutes": "min",
+    "loading": "Cargando...",
+    "error": "Error"
+  }
+}

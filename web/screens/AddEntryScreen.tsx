@@ -14,9 +14,10 @@ import {
 import { useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { addEntry } from '../store/entriesSlice';
-import { DEFAULT_ACTIVITIES, ActivityType, CreateEntryInput } from '../../shared/types/Entry';
+import { DEFAULT_ACTIVITIES, ActivityType, CreateEntryInput } from '@shared/types';
 import { AddEntryScreenProps } from '../types/Navigation';
 
 interface FormData {
@@ -28,6 +29,7 @@ interface FormData {
 }
 
 export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [selectedSatisfaction, setSelectedSatisfaction] = useState<number | null>(null);
@@ -36,7 +38,7 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
 
   const onSubmit = (data: FormData) => {
     if (!selectedActivity) {
-      Alert.alert('Error', 'Por favor selecciona un tipo de actividad');
+      Alert.alert(t('common.error'), t('addEntry.error.activityRequired'));
       return;
     }
 
@@ -52,11 +54,11 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
     dispatch(addEntry(newEntry));
     
     Alert.alert(
-      'Entrada guardada',
-      'Tu nueva entrada ha sido registrada exitosamente',
+      t('addEntry.success.title'),
+      t('addEntry.success.message'),
       [
         {
-          text: 'OK',
+          text: t('common.ok'),
           onPress: () => navigation.goBack(),
         },
       ]
@@ -88,9 +90,9 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
       <ScrollView style={styles.content}>
         {/* Selector de actividad */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>¿Qué tipo de actividad?</Text>
+          <Text style={styles.sectionTitle}>{t('addEntry.activityType')}</Text>
           <View style={styles.activitiesGrid}>
-            {DEFAULT_ACTIVITIES.map((activity) => (
+            {DEFAULT_ACTIVITIES.map((activity:  ActivityType) => (
               <TouchableOpacity
                 key={activity.id}
                 style={[
@@ -104,7 +106,7 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
                   styles.activityName,
                   selectedActivity?.id === activity.id && styles.activityNameSelected
                 ]}>
-                  {activity.name}
+                  {t(activity.name)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -113,14 +115,14 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
 
         {/* Pareja (opcional) */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Pareja (opcional)</Text>
+          <Text style={styles.sectionTitle}>{t('addEntry.partner')}</Text>
           <Controller
             control={control}
             name="partner"
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={styles.textInput}
-                placeholder="Nombre de tu pareja"
+                placeholder={t('addEntry.partnerPlaceholder')}
                 value={value}
                 onChangeText={onChange}
                 autoCapitalize="words"
@@ -131,14 +133,14 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
 
         {/* Duración (opcional) */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Duración en minutos (opcional)</Text>
+          <Text style={styles.sectionTitle}>{t('addEntry.duration')}</Text>
           <Controller
             control={control}
             name="duration"
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={styles.textInput}
-                placeholder="Ej: 30"
+                placeholder={t('addEntry.durationPlaceholder')}
                 value={value?.toString()}
                 onChangeText={(text) => onChange(text ? parseInt(text) : undefined)}
                 keyboardType="numeric"
@@ -149,27 +151,27 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
 
         {/* Satisfacción */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>¿Cómo te sentiste?</Text>
+          <Text style={styles.sectionTitle}>{t('addEntry.satisfaction')}</Text>
           <View style={styles.starsContainer}>
             {renderSatisfactionStars()}
           </View>
           {selectedSatisfaction && (
             <Text style={styles.satisfactionLabel}>
-              {selectedSatisfaction} de 5 estrellas
+              {t('addEntry.satisfactionLabel', { stars: selectedSatisfaction })}
             </Text>
           )}
         </View>
 
         {/* Notas */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notas (opcional)</Text>
+          <Text style={styles.sectionTitle}>{t('addEntry.notes')}</Text>
           <Controller
             control={control}
             name="notes"
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={[styles.textInput, styles.notesInput]}
-                placeholder="Cualquier detalle que quieras recordar..."
+                placeholder={t('addEntry.notesPlaceholder')}
                 value={value}
                 onChangeText={onChange}
                 multiline
@@ -186,7 +188,7 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
           onPress={handleSubmit(onSubmit)}
         >
           <Ionicons name="checkmark" size={24} color="white" />
-          <Text style={styles.saveButtonText}>Guardar Entrada</Text>
+          <Text style={styles.saveButtonText}>{t('addEntry.save')}</Text>
         </TouchableOpacity>
 
         <View style={styles.bottomPadding} />

@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { format, isToday, isYesterday, startOfWeek, endOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 import { RootState } from '../store/store';
 import { deleteEntry } from '../store/entriesSlice';
@@ -21,6 +22,7 @@ import { Entry } from '../../shared/types/Entry';
 import { HistoryScreenProps } from '../types/Navigation';
 
 export default function HistoryScreen({ navigation }: HistoryScreenProps) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { entries } = useSelector((state: RootState) => state.entries);
   const [selectedPeriod, setSelectedPeriod] = useState<'all' | 'week' | 'month'>('all');
@@ -55,9 +57,9 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
 
   const formatDate = (date: Date) => {
     if (isToday(date)) {
-      return 'Hoy';
+      return t('history.time.today');
     } else if (isYesterday(date)) {
-      return 'Ayer';
+      return t('history.time.yesterday');
     } else {
       return format(date, 'dd/MM/yyyy', { locale: es });
     }
@@ -69,15 +71,15 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
 
   const handleDeleteEntry = (entryId: string) => {
     Alert.alert(
-      'Eliminar entrada',
-      '¿Estás seguro de que quieres eliminar esta entrada?',
+      t('history.delete.title'),
+      t('history.delete.message'),
       [
         {
-          text: 'Cancelar',
+          text: t('history.delete.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Eliminar',
+          text: t('history.delete.confirm'),
           style: 'destructive',
           onPress: () => dispatch(deleteEntry(entryId)),
         },
@@ -107,9 +109,9 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
           <View style={styles.activityInfo}>
             <Text style={styles.activityIcon}>{item.activityType.icon}</Text>
             <View style={styles.activityDetails}>
-              <Text style={styles.activityName}>{item.activityType.name}</Text>
+              <Text style={styles.activityName}>{t(item.activityType.name)}</Text>
               {item.partner && (
-                <Text style={styles.partnerName}>Con {item.partner}</Text>
+                <Text style={styles.partnerName}>{t('history.time.with', { partner: item.partner })}</Text>
               )}
             </View>
           </View>
@@ -140,11 +142,11 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Ionicons name="calendar-outline" size={48} color="#ccc" />
-      <Text style={styles.emptyText}>No hay entradas</Text>
+      <Text style={styles.emptyText}>{t('history.empty.title')}</Text>
       <Text style={styles.emptySubtext}>
         {selectedPeriod === 'all' 
-          ? 'Aún no has registrado ninguna actividad'
-          : `No hay entradas para este ${selectedPeriod === 'week' ? 'período' : 'mes'}`
+          ? t('history.empty.subtitle')
+          : selectedPeriod === 'week' ? t('history.empty.subtitlePeriod') : t('history.empty.subtitleMonth')
         }
       </Text>
     </View>
@@ -167,7 +169,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
               styles.filterButtonText,
               selectedPeriod === 'all' && styles.filterButtonTextActive
             ]}>
-              Todo
+              {t('history.filters.all')}
             </Text>
           </TouchableOpacity>
           
@@ -182,7 +184,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
               styles.filterButtonText,
               selectedPeriod === 'week' && styles.filterButtonTextActive
             ]}>
-              Semana
+              {t('history.filters.week')}
             </Text>
           </TouchableOpacity>
           
@@ -197,7 +199,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
               styles.filterButtonText,
               selectedPeriod === 'month' && styles.filterButtonTextActive
             ]}>
-              Mes
+              {t('history.filters.month')}
             </Text>
           </TouchableOpacity>
         </View>
