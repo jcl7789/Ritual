@@ -32,35 +32,30 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     navigation.navigate('AddEntry');
   };
 
+  const goToSettings = () => {
+    navigation.navigate('Settings');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
+      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30 }} showsVerticalScrollIndicator={true}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>{t('home.title')}</Text>
           <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
 
-          <View style={styles.languageSwitcher}>
-            {/* Spanish language selector button */}
+          <View style={styles.settingsContainer}>
+            {/* settings button */}
             <TouchableOpacity
               style={[styles.button, i18n.language === 'es' ? styles.activeButton : styles.inactiveButton]}
-              onPress={() => changeLanguage('es')} // Call changeLanguage with 'es' on press
-              accessibilityLabel={t('spanishLanguage')} // Accessibility label for Spanish button
+              onPress={goToSettings} // Call changeLanguage with 'es' on press
+              accessibilityLabel={t('settings')} // Accessibility label for Spanish button
             >
-              {/* CountryFlag para España */}
-              <CountryFlag isoCode="ES" size={30} style={styles.flagIcon} />
-            </TouchableOpacity>
-
-            {/* English language selector button */}
-            <TouchableOpacity
-              style={[styles.button, i18n.language === 'en' ? styles.activeButton : styles.inactiveButton]}
-              onPress={() => changeLanguage('en')} // Call changeLanguage with 'en' on press
-              accessibilityLabel={t('englishLanguage')} // Accessibility label for English button
-            >
-              {/* CountryFlag para Reino Unido (Inglaterra) */}
-              <CountryFlag isoCode="GB" size={30} style={styles.flagIcon} />
+              <Ionicons name="settings" size={24} color={i18n.language === 'es' ? 'white' : '#4b5563'} />
             </TouchableOpacity>
           </View>
+
+
         </View>
 
         {/* Estadísticas rápidas */}
@@ -135,8 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   content: {
-    flex: 1,
-    padding: 20,
+    // padding is now handled by contentContainerStyle
   },
   header: {
     marginBottom: 30,
@@ -183,7 +177,7 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
   },
-  languageSwitcher: {
+  settingsContainer: {
     position: 'absolute', // Position absolutely
     top: 0, // Align to the top
     right: 0, // Align to the right
@@ -211,9 +205,6 @@ const styles = StyleSheet.create({
   },
   inactiveButton: {
     backgroundColor: '#ffffff', // White background for inactive button
-  },
-  flagIcon: { // New style for the flag
-    // Removed marginRight, now handled by gap
   },
   activeText: {
     color: '#ffffff', // White text for active button

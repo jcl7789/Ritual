@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import HomeScreen from '../../screens/HomeScreen';
 import HistoryScreen from '../../screens/HistoryScreen';
 import AddEntryScreen from '../../screens/AddEntryScreen';
+import SettingsScreen from '../../screens/SettingsScreen';
 
 import { TabParamList, RootStackParamList, TabBarIconProps } from '../../types/Navigation';
 
@@ -89,6 +90,17 @@ export default function Navigation() {
           },
           headerTintColor: '#fff',
         }}
+      />
+      <Stack.Screen
+      name="Settings"
+      component={SettingsScreen} // Assuming you have a SettingsScreen component
+      options={{
+        title: t('settings.title'),
+        headerStyle: {
+          backgroundColor: '#6366f1',
+        },
+        headerTintColor: '#fff',
+      }}
       />
     </Stack.Navigator>
   );

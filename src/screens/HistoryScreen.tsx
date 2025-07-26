@@ -212,13 +212,6 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
             ]}>
               {t('history.filters.month')}
             </Text>
-            {/* Go Back Button */}
-            <TouchableOpacity
-              style={styles.goBackButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="arrow-back" size={24} color="#6366f1" />
-            </TouchableOpacity>
           </TouchableOpacity>
         </View>
       </View>
@@ -228,10 +221,9 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
         data={filteredEntries}
         renderItem={renderEntry}
         keyExtractor={(item) => item.id}
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={{ padding: 20, paddingTop: 10 }}
         ListEmptyComponent={renderEmptyState}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       />
     </SafeAreaView>
   );
@@ -277,11 +269,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   list: {
-    flex: 1,
-  },
-  listContent: {
-    padding: 20,
-    paddingTop: 10,
+    // padding is now handled by contentContainerStyle
   },
   entryCard: {
     backgroundColor: 'white',
@@ -386,9 +374,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9ca3af',
     textAlign: 'center',
-  },
-  goBackButton: {
-    marginRight: 12,
-    padding: 4,
   },
 });

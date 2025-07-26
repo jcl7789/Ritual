@@ -94,5 +94,64 @@
     "minutes": "min",
     "loading": "Cargando...",
     "error": "Error"
+  },
+  "settings": {
+    "title": "Configuración",
+    "appStats": {
+      "title": "Estadísticas de la app",
+      "totalEntries": "Entradas totales",
+      "thisMonth": "Este mes",
+      "lastActivity": "Última actividad"
+    },
+    "language": {
+      "title": "Idioma"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "enabled": "Activar notificaciones"
+    },
+    "dataManagement": {
+      "title": "Datos y Backup"
+    },
+    "backup": {
+      "title": "Crear backup",
+      "subtitle": "Guarda una copia de tus datos",
+      "success": {
+        "title": "Backup creado",
+        "message": "Tu backup se creó correctamente"
+      }
+    },
+    "export": {
+      "title": "Exportar datos",
+      "subtitle": "Exporta tus datos a un archivo",
+      "shareTitle": "Compartir datos exportados"
+    },
+    "import": {
+      "title": "Importar datos",
+      "subtitle": "Importa datos desde un backup",
+      "confirmTitle": "¿Importar datos?",
+      "confirmMessage": "¿Seguro que quieres importar datos? Esto sobrescribirá tus datos actuales.",
+      "confirm": "Importar",
+      "pasteTitle": "Pega los datos del backup",
+      "pasteMessage": "Pega los datos cifrados del backup abajo.",
+      "success": {
+        "title": "Importación exitosa",
+        "message": "Tus datos se importaron correctamente"
+      }
+    },
+    "dangerZone": {
+      "title": "Zona peligrosa"
+    },
+    "clearData": {
+      "title": "Eliminar todos los datos",
+      "subtitle": "Esto eliminará permanentemente todas tus entradas y configuración.",
+      "confirmTitle": "¿Estás seguro?",
+      "confirmMessage": "Esta acción no se puede deshacer. Todos tus datos serán eliminados.",
+      "confirm": "Eliminar todo",
+      "success": {
+        "title": "Datos eliminados",
+        "message": "Todos tus datos han sido eliminados"
+      }
+    }
   }
 }

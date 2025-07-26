@@ -94,5 +94,64 @@
     "minutes": "min",
     "loading": "Loading...",
     "error": "Error"
+  },
+  "settings": {
+    "title": "Settings",
+    "appStats": {
+      "title": "App statistics",
+      "totalEntries": "Total entries",
+      "thisMonth": "This month",
+      "lastActivity": "Last activity"
+    },
+    "language": {
+      "title": "Language"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "enabled": "Enable notifications"
+    },
+    "dataManagement": {
+      "title": "Data & Backup"
+  },
+    "backup": {
+      "title": "Create backup",
+      "subtitle": "Save a backup of your data",
+      "success": {
+        "title": "Backup created",
+        "message": "Your backup was created successfully"
+      }
+    },
+    "export": {
+      "title": "Export data",
+      "subtitle": "Export your data to a file",
+      "shareTitle": "Share exported data"
+    },
+    "import": {
+      "title": "Import data",
+      "subtitle": "Import data from a backup",
+      "confirmTitle": "Import data?",
+      "confirmMessage": "Are you sure you want to import data? This will overwrite your current data.",
+      "confirm": "Import",
+      "pasteTitle": "Paste backup data",
+      "pasteMessage": "Paste the encrypted backup data below.",
+      "success": {
+        "title": "Import successful",
+        "message": "Your data was imported successfully"
+      }
+    },
+    "dangerZone": {
+      "title": "Danger Zone"
+    },
+    "clearData": {
+      "title": "Delete all data",
+      "subtitle": "This will permanently delete all your entries and settings.",
+      "confirmTitle": "Are you sure?",
+      "confirmMessage": "This action cannot be undone. All your data will be deleted.",
+      "confirm": "Delete all",
+      "success": {
+        "title": "Data deleted",
+        "message": "All your data has been deleted"
+      }
+    }
   }
-}
+  }

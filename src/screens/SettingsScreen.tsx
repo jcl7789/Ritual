@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import CountryFlag from 'react-native-country-flag';
 
 import { RootState, AppDispatch } from '../store/store';
 import { 
@@ -144,7 +145,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
+      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30 }} showsVerticalScrollIndicator={true}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>{t('settings.title')}</Text>
@@ -184,11 +185,12 @@ export default function SettingsScreen() {
               ]}
               onPress={() => changeLanguage('es')}
             >
+              <CountryFlag isoCode="ES" size={14}/>
               <Text style={[
                 styles.languageButtonText,
                 i18n.language === 'es' && styles.languageButtonTextActive
               ]}>
-                🇪🇸 Español
+                 Español
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -198,11 +200,12 @@ export default function SettingsScreen() {
               ]}
               onPress={() => changeLanguage('en')}
             >
+              <CountryFlag isoCode="GB" size={14} />
               <Text style={[
                 styles.languageButtonText,
                 i18n.language === 'en' && styles.languageButtonTextActive
               ]}>
-                🇬🇧 English
+                 English
               </Text>
             </TouchableOpacity>
           </View>
@@ -309,8 +312,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   content: {
-    flex: 1,
-    padding: 20,
   },
   header: {
     marginBottom: 30,

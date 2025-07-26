@@ -95,7 +95,7 @@ try {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
+      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30 }} showsVerticalScrollIndicator={true}>
         {/* Selector de actividad */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('addEntry.activityType')}</Text>
@@ -211,8 +211,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   content: {
-    flex: 1,
-    padding: 20,
+    // padding is now handled by contentContainerStyle
   },
   section: {
     marginBottom: 25,
