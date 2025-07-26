@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
+    "build": "expo export",
     "clean": "rimraf dist && rimraf build"
   },
   "dependencies": {
