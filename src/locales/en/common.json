@@ -38,7 +38,13 @@
     "previous": "Back",
     "next": "Next",
     "getStarted": "Get Started",
-    "skip": "Skip"
+    "skip": "Skip",
+    "setup": "Initial Setup",
+    "saving": "Saving...",
+    "error": {
+      "title": "Setup Error",
+      "message": "There was an error setting up the app. Please try again."
+    }
   },
   "profile": {
     "title": "Create Your Profile",
@@ -134,7 +140,9 @@
     "close": "Close",
     "minutes": "min",
     "loading": "Loading...",
-    "error": "Error"
+    "error": "Error",
+    "retry": "Retry",
+    "continue": "Continue anyway"
   },
   "settings": {
     "title": "Settings",

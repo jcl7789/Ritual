@@ -38,7 +38,13 @@
     "previous": "Atrás",
     "next": "Siguiente",
     "getStarted": "Comenzar",
-    "skip": "Saltar"
+    "skip": "Saltar",
+    "setup": "Configuración inicial",
+    "saving": "Guardando...",
+    "error": {
+      "title": "Error de configuración",
+      "message": "Hubo un error al configurar la aplicación. Por favor, intenta de nuevo."
+    }
   },
   "profile": {
     "title": "Crea tu perfil",
@@ -134,7 +140,9 @@
     "close": "Cerrar",
     "minutes": "min",
     "loading": "Cargando...",
-    "error": "Error"
+    "error": "Error",
+    "retry": "Reintentar",
+    "continue": "Continuar de todos modos"
   },
   "settings": {
     "title": "Configuración",
