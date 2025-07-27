@@ -1,77 +1,154 @@
-// src/store/slices/entriesSlice.ts
-
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { Entry, CreateEntryInput, EntryFilters } from '../../types/Entry';
-import { UserStats } from '../../types/User';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { Entry, CreateEntryInput, UserStats } from '../../types';
+import { User, UserProfile } from '../../types/User';
 import { StorageService } from '../../services/storage/StorageService';
-import { generateUUID } from '../../utils/uuid';
+
+
 
 interface EntriesState {
   entries: Entry[];
+  stats: UserStats;
+  user: User | null;
+  initialized: boolean;
   loading: boolean;
   error: string | null;
-  filters: EntryFilters;
-  stats: UserStats;
-  initialized: boolean;
+  isFirstTime: boolean;
 }
 
 const initialState: EntriesState = {
   entries: [],
-  loading: false,
-  error: null,
-  filters: {},
   stats: {
     totalEntries: 0,
     thisMonth: 0,
+    averageSatisfaction: undefined,
+    lastActivity: undefined,
+    mostCommonActivity: undefined,
   },
+  user: null,
   initialized: false,
+  loading: false,
+  error: null,
+  isFirstTime: true,
 };
 
-// Async Thunks para manejar almacenamiento
+// Async thunks
 export const initializeApp = createAsyncThunk(
-  'entries/initialize',
+  'entries/initializeApp',
   async (_, { rejectWithValue }) => {
     try {
-      const entries = await StorageService.getEntries();
-      return entries;
+      // Verificar si es primera vez
+      const hasExistingData = await StorageService.hasUserData();
+      
+      if (!hasExistingData) {
+        return {
+          isFirstTime: true,
+          entries: [],
+          stats: initialState.stats,
+          userProfile: null,
+        };
+      }
+
+      // Cargar datos existentes
+      const [entries, stats, userRaw] = await Promise.all([
+        StorageService.getEntries(),
+        StorageService.getUserStats(),
+        StorageService.getUserProfile(),
+      ]);
+      let user: User | null = null;
+      if (userRaw) {
+        user = {
+          entries,
+          createdAt: userRaw.createdAt,
+          updatedAt: (userRaw as any).updatedAt ?? undefined,
+          profile: userRaw.profile ?? {
+            name: '',
+            age: 0,
+            partners: [], // Partner[] type
+            actualPartner: 0,
+            language: 'en',
+          },
+        };
+      }
+      return {
+        isFirstTime: false,
+        entries,
+        stats,
+        user,
+      };
     } catch (error) {
+      console.error('Error initializing app:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to initialize app');
+    }
+  }
+);
+
+export const initializeUserProfile = createAsyncThunk(
+  'entries/initializeUserProfile',
+  async (profileData: Omit<UserProfile, 'createdAt'>, { rejectWithValue }) => {
+    try {
+      const userProfile: UserProfile = {
+        ...profileData,
+      };
+
+      await StorageService.initializeUserProfile(userProfile);
+      await StorageService.initializeStorage();
+      const stats = await StorageService.getUserStats();
+      const userRaw = await StorageService.getUserProfile();
+      const entries = await StorageService.getEntries();
+      let user: User;
+      if (userRaw) {
+        user = {
+          entries,
+          createdAt: userRaw.createdAt,
+          updatedAt: (userRaw as any).updatedAt ?? undefined,
+          profile: userRaw.profile ?? {
+            name: '',
+            age: 0,
+            partners: [], // Partner[] type
+            actualPartner: 0,
+            language: 'en',
+          },
+        };
+      } else {
+        user = {
+          entries: [],
+          createdAt: new Date(),
+          updatedAt: undefined,
+          profile: {
+            name: '',
+            age: 0,
+            partners: [], // Partner[] type
+            actualPartner: 0,
+            language: 'en',
+          },
+        };
+      }
+
+      return {
+        user,
+        stats,
+      };
+    } catch (error) {
+      console.error('Error initializing user profile:', error);
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to initialize user profile');
     }
   }
 );
 
 export const addEntryAsync = createAsyncThunk(
   'entries/addEntry',
-  async (entryInput: CreateEntryInput, { rejectWithValue }) => {
+  async (entryData: CreateEntryInput, { rejectWithValue }) => {
     try {
-      const newEntry: Entry = {
-        id: generateUUID(),
-        ...entryInput,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      const newEntry = await StorageService.saveEntry(entryData);
+      const updatedStats = await StorageService.getUserStats();
       
-      await StorageService.saveEntry(newEntry);
-      return newEntry;
+      return {
+        entry: newEntry,
+        stats: updatedStats,
+      };
     } catch (error) {
+      console.error('Error adding entry:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to add entry');
-    }
-  }
-);
-
-export const updateEntryAsync = createAsyncThunk(
-  'entries/updateEntry',
-  async (entry: Entry, { rejectWithValue }) => {
-    try {
-      const updatedEntry = {
-        ...entry,
-        updatedAt: new Date(),
-      };
-      
-      await StorageService.saveEntry(updatedEntry);
-      return updatedEntry;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update entry');
     }
   }
 );
@@ -81,9 +158,35 @@ export const deleteEntryAsync = createAsyncThunk(
   async (entryId: string, { rejectWithValue }) => {
     try {
       await StorageService.deleteEntry(entryId);
-      return entryId;
+      const updatedStats = await StorageService.getUserStats();
+      
+      return {
+        entryId,
+        stats: updatedStats,
+      };
     } catch (error) {
+      console.error('Error deleting entry:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete entry');
+    }
+  }
+);
+
+export const loadEntriesAsync = createAsyncThunk(
+  'entries/loadEntries',
+  async (_, { rejectWithValue }) => {
+    try {
+      const [entries, stats] = await Promise.all([
+        StorageService.getEntries(),
+        StorageService.getUserStats(),
+      ]);
+      
+      return {
+        entries,
+        stats,
+      };
+    } catch (error) {
+      console.error('Error loading entries:', error);
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to load entries');
     }
   }
 );
@@ -92,9 +195,10 @@ export const createBackupAsync = createAsyncThunk(
   'entries/createBackup',
   async (_, { rejectWithValue }) => {
     try {
-      await StorageService.createBackup();
-      return true;
+      const backupData = await StorageService.createBackup();
+      return backupData;
     } catch (error) {
+      console.error('Error creating backup:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create backup');
     }
   }
@@ -107,6 +211,7 @@ export const exportDataAsync = createAsyncThunk(
       const exportedData = await StorageService.exportData();
       return exportedData;
     } catch (error) {
+      console.error('Error exporting data:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to export data');
     }
   }
@@ -117,9 +222,34 @@ export const importDataAsync = createAsyncThunk(
   async (encryptedData: string, { rejectWithValue }) => {
     try {
       await StorageService.importData(encryptedData);
-      const entries = await StorageService.getEntries();
-      return entries;
+      // Recargar datos después de la importación
+      const [entries, stats, userProfileRaw] = await Promise.all([
+        StorageService.getEntries(),
+        StorageService.getUserStats(),
+        StorageService.getUserProfile(),
+      ]);
+      let user: User | null = null;
+      if (userProfileRaw) {
+        user = {
+          entries,
+          createdAt: userProfileRaw.createdAt,
+          updatedAt: (userProfileRaw as any).updatedAt ?? undefined,
+          profile: userProfileRaw.profile ?? {
+            name: '',
+            age: 0,
+            partners: [], // Partner[] type
+            actualPartner: 0,
+            language: 'en',
+          },
+        };
+      }
+      return {
+        entries,
+        stats,
+        user,
+      };
     } catch (error) {
+      console.error('Error importing data:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to import data');
     }
   }
@@ -129,19 +259,13 @@ const entriesSlice = createSlice({
   name: 'entries',
   initialState,
   reducers: {
-    // Configurar filtros
-    setFilters: (state, action: PayloadAction<EntryFilters>) => {
-      state.filters = action.payload;
-    },
-
-    // Limpiar filtros
-    clearFilters: (state) => {
-      state.filters = {};
-    },
-
-    // Limpiar errores
     clearError: (state) => {
       state.error = null;
+    },
+    updateUserProfile: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
     },
   },
   extraReducers: (builder) => {
@@ -153,14 +277,33 @@ const entriesSlice = createSlice({
       })
       .addCase(initializeApp.fulfilled, (state, action) => {
         state.loading = false;
-        state.entries = action.payload;
-        state.stats = calculateStats(action.payload);
         state.initialized = true;
+        state.isFirstTime = action.payload.isFirstTime;
+        state.entries = action.payload.entries;
+        state.stats = action.payload.stats;
+        state.user = action.payload.user ?? null;
+        
       })
       .addCase(initializeApp.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+
+      // Initialize User Profile
+      .addCase(initializeUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(initializeUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user ?? null;
+        state.stats = action.payload.stats;
+        state.isFirstTime = false;
         state.initialized = true;
+      })
+      .addCase(initializeUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       })
 
       // Add Entry
@@ -170,28 +313,10 @@ const entriesSlice = createSlice({
       })
       .addCase(addEntryAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.entries.unshift(action.payload);
-        state.stats = calculateStats(state.entries);
+        state.entries.unshift(action.payload.entry); // Agregar al inicio
+        state.stats = action.payload.stats;
       })
       .addCase(addEntryAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      // Update Entry
-      .addCase(updateEntryAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateEntryAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.entries.findIndex((entry:Entry) => entry.id === action.payload.id);
-        if (index !== -1) {
-          state.entries[index] = action.payload;
-          state.stats = calculateStats(state.entries);
-        }
-      })
-      .addCase(updateEntryAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
@@ -203,10 +328,27 @@ const entriesSlice = createSlice({
       })
       .addCase(deleteEntryAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.entries = state.entries.filter((entry:Entry) => entry.id !== action.payload);
-        state.stats = calculateStats(state.entries);
+        state.entries = state.entries.filter(
+          entry => entry.id !== action.payload.entryId
+        );
+        state.stats = action.payload.stats;
       })
       .addCase(deleteEntryAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Load Entries
+      .addCase(loadEntriesAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadEntriesAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.entries = action.payload.entries;
+        state.stats = action.payload.stats;
+      })
+      .addCase(loadEntriesAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
@@ -244,8 +386,9 @@ const entriesSlice = createSlice({
       })
       .addCase(importDataAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.entries = action.payload;
-        state.stats = calculateStats(action.payload);
+        state.entries = action.payload.entries;
+        state.stats = action.payload.stats;
+        state.user = action.payload.user ?? null;
       })
       .addCase(importDataAsync.rejected, (state, action) => {
         state.loading = false;
@@ -254,58 +397,5 @@ const entriesSlice = createSlice({
   },
 });
 
-// Función para calcular estadísticas
-const calculateStats = (entries: Entry[]): UserStats => {
-  if (entries.length === 0) {
-    return {
-      totalEntries: 0,
-      thisMonth: 0,
-    };
-  }
-
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  const thisMonthEntries = entries.filter(entry => {
-    const entryDate = new Date(entry.date);
-    return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
-  });
-
-  const entriesWithSatisfaction = entries.filter(entry => entry.satisfaction !== undefined);
-  const averageSatisfaction = entriesWithSatisfaction.length > 0
-    ? entriesWithSatisfaction.reduce((sum, entry) => sum + (entry.satisfaction || 0), 0) / entriesWithSatisfaction.length
-    : undefined;
-
-  // Encontrar actividad más común
-  const activityCounts: { [key: string]: { count: number; activity: any } } = {};
-  entries.forEach(entry => {
-    const activityId = entry.activityType.id;
-    if (activityCounts[activityId]) {
-      activityCounts[activityId].count++;
-    } else {
-      activityCounts[activityId] = { count: 1, activity: entry.activityType };
-    }
-  });
-
-  const mostCommonActivity = Object.values(activityCounts).reduce((max, current) => 
-    current.count > max.count ? current : max, 
-    { count: 0, activity: undefined }
-  ).activity;
-
-  return {
-    totalEntries: entries.length,
-    thisMonth: thisMonthEntries.length,
-    lastActivity: entries.length > 0 ? new Date(entries[0].date) : undefined,
-    averageSatisfaction,
-    mostCommonActivity,
-  };
-};
-
-export const {
-  setFilters,
-  clearFilters,
-  clearError,
-} = entriesSlice.actions;
-
+export const { clearError, updateUserProfile } = entriesSlice.actions;
 export default entriesSlice.reducer;

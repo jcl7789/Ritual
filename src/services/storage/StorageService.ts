@@ -1,52 +1,97 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { EncryptionService } from './EncryptionService';
-import { Entry } from '../../types/Entry';
-// import { User, UserStats } from '../../types/User';
+// src/services/storage/StorageService.ts
 
-export interface StoredData {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoJS from 'crypto-js';
+import { Entry, CreateEntryInput } from '../../types/Entry';
+import { User, UserProfile } from '../../types/User';
+
+// Crear y exportar una instancia singleton del servicio
+import { UserStats } from '../../types/User';
+import { generateUUID } from '../../utils/uuid';
+
+interface StoredData {
   entries: Entry[];
   settings: {
     language: string;
-    theme: 'light' | 'dark';
+    theme: string;
     notifications: boolean;
   };
   user: {
-    userId: string;
     createdAt: Date;
+    profile?: UserProfile; // Perfil de usuario opcional
   };
   metadata: {
     version: string;
-    lastBackup?: Date;
     dataHash: string;
+    lastBackup?: Date;
   };
 }
 
-export class StorageService {
-  private static readonly STORAGE_KEY = 'ritual_encrypted_data';
-  private static readonly BACKUP_KEY = 'ritual_backup_data';
-  private static readonly VERSION = '1.0.0';
+class StorageServiceClass {
+  private readonly STORAGE_KEY = 'ritual_data';
+  private readonly SECRET_KEY = 'ritual_secret_key_2024';
+  private readonly VERSION = '1.0.0';
 
   /**
-   * Guarda todos los datos cifrados
+   * Inicializa el almacenamiento si es la primera vez
    */
-  static async saveData(data: Partial<StoredData>): Promise<void> {
+  async initializeStorage(): Promise<void> {
     try {
-      const existingData = await this.loadData();
-      const updatedData: StoredData = {
-        ...existingData,
-        ...data,
-        metadata: {
-          ...existingData.metadata,
-          version: this.VERSION,
-          dataHash: EncryptionService.generateHash(JSON.stringify({
-            entries: data.entries || existingData.entries,
-            settings: data.settings || existingData.settings,
-            user: data.user || existingData.user,
-          })),
-        },
-      };
+      const existingData = await this.getData();
+      if (!existingData) {
+        const initialData: StoredData = {
+          entries: [],
+          settings: {
+            language: 'en',
+            theme: 'light',
+            notifications: true,
+          },
+          user: {
+            createdAt: new Date(),
+          },
+          metadata: {
+            version: this.VERSION,
+            dataHash: this.generateDataHash([]),
+          },
+        };
+        await this.saveData(initialData);
+      }
+    } catch (error) {
+      console.error('Error initializing storage:', error);
+      throw new Error('Failed to initialize storage');
+    }
+  }
 
-      const encryptedData = EncryptionService.encrypt(updatedData);
+  /**
+   * Encripta datos
+   */
+  private encrypt(data: string): string {
+    return CryptoJS.AES.encrypt(data, this.SECRET_KEY).toString();
+  }
+
+  /**
+   * Desencripta datos
+   */
+  private decrypt(encryptedData: string): string {
+    const bytes = CryptoJS.AES.decrypt(encryptedData, this.SECRET_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  }
+
+  /**
+   * Genera hash de integridad para los datos
+   */
+  private generateDataHash(entries: Entry[]): string {
+    const dataString = JSON.stringify(entries);
+    return CryptoJS.SHA256(dataString).toString();
+  }
+
+  /**
+   * Guarda datos encriptados en AsyncStorage
+   */
+  private async saveData(data: StoredData): Promise<void> {
+    try {
+      const jsonData = JSON.stringify(data);
+      const encryptedData = this.encrypt(jsonData);
       await AsyncStorage.setItem(this.STORAGE_KEY, encryptedData);
     } catch (error) {
       console.error('Error saving data:', error);
@@ -55,89 +100,184 @@ export class StorageService {
   }
 
   /**
-   * Carga todos los datos descifrados
+   * Obtiene y desencripta datos de AsyncStorage
    */
-  static async loadData(): Promise<StoredData> {
+  private async getData(): Promise<StoredData | null> {
     try {
       const encryptedData = await AsyncStorage.getItem(this.STORAGE_KEY);
-      
-      if (!encryptedData) {
-        return this.getDefaultData();
-      }
+      if (!encryptedData) return null;
 
-      const decryptedData = EncryptionService.decrypt(encryptedData);
+      const decryptedData = this.decrypt(encryptedData);
+      const data: StoredData = JSON.parse(decryptedData);
       
-      // Verificar integridad de datos
-      const currentHash = EncryptionService.generateHash(JSON.stringify({
-        entries: decryptedData.entries,
-        settings: decryptedData.settings,
-        user: decryptedData.user,
+      // Convertir strings de fecha a objetos Date
+      data.entries = data.entries.map(entry => ({
+        ...entry,
+        date: new Date(entry.date),
+        createdAt: new Date(entry.createdAt),
+        updatedAt: new Date(entry.updatedAt),
       }));
 
-      if (!EncryptionService.verifyIntegrity(JSON.stringify({
-        entries: decryptedData.entries,
-        settings: decryptedData.settings,
-        user: decryptedData.user,
-      }), currentHash)) {
-        console.warn('Data integrity check failed, using backup or default data');
-        return await this.loadBackupData() || this.getDefaultData();
-      }
-
-      return decryptedData;
+      return data;
     } catch (error) {
-      console.error('Error loading data:', error);
-      // Intentar cargar backup
-      const backupData = await this.loadBackupData();
-      return backupData || this.getDefaultData();
+      console.error('Error getting data:', error);
+      throw new Error('Failed to decrypt data. Data may be corrupted.');
     }
-  }
-
-  /**
-   * Guarda una entrada específica
-   */
-  static async saveEntry(entry: Entry): Promise<void> {
-    const data = await this.loadData();
-    const existingIndex = data.entries.findIndex(e => e.id === entry.id);
-    
-    if (existingIndex >= 0) {
-      data.entries[existingIndex] = entry;
-    } else {
-      data.entries.unshift(entry);
-    }
-
-    await this.saveData({ entries: data.entries });
-  }
-
-  /**
-   * Elimina una entrada específica
-   */
-  static async deleteEntry(entryId: string): Promise<void> {
-    const data = await this.loadData();
-    data.entries = data.entries.filter(entry => entry.id !== entryId);
-    await this.saveData({ entries: data.entries });
   }
 
   /**
    * Obtiene todas las entradas
    */
-  static async getEntries(): Promise<Entry[]> {
-    const data = await this.loadData();
-    return data.entries;
+  async getEntries(): Promise<Entry[]> {
+    try {
+      const data = await this.getData();
+      return data?.entries || [];
+    } catch (error) {
+      console.error('Error getting entries:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Guarda una nueva entrada
+   */
+  async saveEntry(entryInput: CreateEntryInput): Promise<Entry> {
+    try {
+      const data = await this.getData();
+      if (!data) throw new Error('Storage not initialized');
+
+      const newEntry: Entry = {
+        id: generateUUID(),
+        ...entryInput,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      data.entries.push(newEntry);
+      data.metadata.dataHash = this.generateDataHash(data.entries);
+
+      await this.saveData(data);
+      return newEntry;
+    } catch (error) {
+      console.error('Error saving entry:', error);
+      throw new Error('Failed to save entry');
+    }
+  }
+
+  /**
+   * Actualiza una entrada existente
+   */
+  async updateEntry(entryId: string, updates: Partial<Entry>): Promise<Entry> {
+    try {
+      const data = await this.getData();
+      if (!data) throw new Error('Storage not initialized');
+
+      const entryIndex = data.entries.findIndex(entry => entry.id === entryId);
+      if (entryIndex === -1) throw new Error('Entry not found');
+
+      data.entries[entryIndex] = {
+        ...data.entries[entryIndex],
+        ...updates,
+        updatedAt: new Date(),
+      };
+
+      data.metadata.dataHash = this.generateDataHash(data.entries);
+      await this.saveData(data);
+
+      return data.entries[entryIndex];
+    } catch (error) {
+      console.error('Error updating entry:', error);
+      throw new Error('Failed to update entry');
+    }
+  }
+
+  /**
+   * Elimina una entrada
+   */
+  async deleteEntry(entryId: string): Promise<void> {
+    try {
+      const data = await this.getData();
+      if (!data) throw new Error('Storage not initialized');
+
+      const initialLength = data.entries.length;
+      data.entries = data.entries.filter(entry => entry.id !== entryId);
+
+      if (data.entries.length === initialLength) {
+        throw new Error('Entry not found');
+      }
+
+      data.metadata.dataHash = this.generateDataHash(data.entries);
+      await this.saveData(data);
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+      throw new Error('Failed to delete entry');
+    }
+  }
+
+  /**
+   * Calcula estadísticas del usuario
+   */
+  async getUserStats(): Promise<UserStats> {
+    try {
+      const entries = await this.getEntries();
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      const thisMonthEntries = entries.filter(entry => 
+        new Date(entry.date) >= startOfMonth
+      );
+
+      const satisfactionScores = entries
+        .filter(entry => entry.satisfaction)
+        .map(entry => entry.satisfaction!);
+
+      const averageSatisfaction = satisfactionScores.length > 0
+        ? satisfactionScores.reduce((sum, score) => sum + score, 0) / satisfactionScores.length
+        : undefined;
+
+      const lastActivity = entries.length > 0
+        ? new Date(Math.max(...entries.map(entry => new Date(entry.date).getTime())))
+        : undefined;
+
+      // Actividad más común
+      const activityCounts = entries.reduce((acc, entry) => {
+        acc[entry.activityType.id] = (acc[entry.activityType.id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const mostCommonActivityId = Object.keys(activityCounts).reduce((a, b) => 
+        activityCounts[a] > activityCounts[b] ? a : b, Object.keys(activityCounts)[0]
+      );
+
+      const mostCommonActivity = entries.find(entry => 
+        entry.activityType.id === mostCommonActivityId
+      )?.activityType;
+
+      return {
+        totalEntries: entries.length,
+        thisMonth: thisMonthEntries.length,
+        lastActivity,
+        averageSatisfaction,
+        mostCommonActivity,
+      };
+    } catch (error) {
+      console.error('Error calculating stats:', error);
+      throw new Error('Failed to calculate statistics');
+    }
   }
 
   /**
    * Crea un backup de los datos
    */
-  static async createBackup(): Promise<void> {
+  async createBackup(): Promise<string> {
     try {
-      const currentData = await this.loadData();
-      currentData.metadata.lastBackup = new Date();
-      
-      const encryptedBackup = EncryptionService.encrypt(currentData);
-      await AsyncStorage.setItem(this.BACKUP_KEY, encryptedBackup);
-      
-      // Actualizar fecha de backup en datos principales
-      await this.saveData(currentData);
+      const data = await this.getData();
+      if (!data) throw new Error('No data to backup');
+
+      data.metadata.lastBackup = new Date();
+      await this.saveData(data);
+
+      return this.encrypt(JSON.stringify(data));
     } catch (error) {
       console.error('Error creating backup:', error);
       throw new Error('Failed to create backup');
@@ -145,60 +285,133 @@ export class StorageService {
   }
 
   /**
-   * Carga datos desde backup
+   * Restaura datos desde un backup
    */
-  static async loadBackupData(): Promise<StoredData | null> {
+  async restoreFromBackup(encryptedBackup: string): Promise<void> {
     try {
-      const encryptedBackup = await AsyncStorage.getItem(this.BACKUP_KEY);
-      if (!encryptedBackup) return null;
-      
-      return EncryptionService.decrypt(encryptedBackup);
-    } catch (error) {
-      console.error('Error loading backup data:', error);
-      return null;
-    }
-  }
+      const decryptedData = this.decrypt(encryptedBackup);
+      const backupData: StoredData = JSON.parse(decryptedData);
 
-  /**
-   * Exporta datos para backup externo
-   */
-  static async exportData(): Promise<string> {
-    const data = await this.loadData();
-    return EncryptionService.encrypt(data);
-  }
-
-  /**
-   * Importa datos desde backup externo
-   */
-  static async importData(encryptedData: string): Promise<void> {
-    try {
-      const importedData = EncryptionService.decrypt(encryptedData);
-      
-      // Validar estructura de datos
-      if (!this.validateDataStructure(importedData)) {
-        throw new Error('Invalid data structure');
+      // Validar estructura del backup
+      if (!backupData.entries || !backupData.user || !backupData.metadata) {
+        throw new Error('Invalid backup format');
       }
 
-      await this.saveData(importedData);
+      // Verificar integridad
+      const calculatedHash = this.generateDataHash(backupData.entries);
+      if (calculatedHash !== backupData.metadata.dataHash) {
+        console.warn('Backup integrity check failed, but proceeding with restoration');
+      }
+
+      await this.saveData(backupData);
     } catch (error) {
-      console.error('Error importing data:', error);
-      throw new Error('Failed to import data');
+      console.error('Error restoring backup:', error);
+      throw new Error('Failed to restore backup. Invalid or corrupted data.');
     }
   }
 
   /**
-   * Limpia todos los datos (para reset)
+   * Exporta datos para compartir
    */
-  static async clearAllData(): Promise<void> {
+  async exportData(): Promise<string> {
+    try {
+      return await this.createBackup();
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      throw new Error('Failed to export data');
+    }
+  }
+
+  /**
+   * Importa datos desde texto encriptado
+   */
+  async importData(encryptedData: string): Promise<void> {
+    try {
+      await this.restoreFromBackup(encryptedData);
+    } catch (error) {
+      console.error('Error importing data:', error);
+      throw new Error('Failed to import data. Please check the format.');
+    }
+  }
+
+  /**
+   * Limpia todos los datos (usar con precaución)
+   */
+  async clearAllData(): Promise<void> {
     try {
       await AsyncStorage.removeItem(this.STORAGE_KEY);
-      await AsyncStorage.removeItem(this.BACKUP_KEY);
+      await this.initializeStorage();
     } catch (error) {
       console.error('Error clearing data:', error);
       throw new Error('Failed to clear data');
     }
   }
 
+  /**
+   * Obtiene el perfil de usuario
+   */
+  async getUserProfile(): Promise<User | null> {
+    try {
+      const data = await this.getData();
+      if (!data || !data.user) return null;
+      const user = data.user;
+      return {
+        entries: data.entries || [],
+        createdAt: user.createdAt,
+        updatedAt: (user as any).updatedAt ?? undefined,
+        profile: user.profile ?? {
+          name: '',
+          age: 0,
+          partners: [], // Partner[] type
+          actualPartner: 0,
+          language: 'en',
+        },
+      };
+    } catch (error) {
+      console.error('Error getting user profile:', error);
+      throw new Error('Failed to get user profile');
+    }
+  }
+
+  /**
+   * Obtiene la configuración de usuario
+   */
+  async hasUserData(): Promise<boolean> {
+    try {
+      const data = await this.getData();
+      return data?.user ? true : false;
+    }
+    catch (error) {
+      console.error('Error checking user data:', error);
+      throw new Error('Failed to check user data');
+    }
+  }
+
+   async initializeUserProfile(userProfile: UserProfile) {
+    try {
+      const data = await this.getData();
+      if (!data) throw new Error('Storage not initialized');
+
+      // Verificar si ya existe un perfil de usuario
+      if (data.user && data.user.profile) {
+        console.warn('User profile already exists, skipping initialization');
+        return;
+      }
+
+      // Crear un nuevo perfil de usuario
+      data.user = {
+        createdAt: new Date(),
+        profile: {
+          ...userProfile
+        },
+      };
+
+      await this.saveData(data);
+    } catch (error) {
+      console.error('Error initializing user profile:', error);
+      throw new Error('Failed to initialize user profile');
+    }
+  }
   /**
    * Obtiene datos por defecto
    */
@@ -211,11 +424,10 @@ export class StorageService {
         notifications: true,
       },
       user: {
-        userId: `user_${Date.now()}`,
         createdAt: new Date(),
       },
       metadata: {
-        version: this.VERSION,
+        version: StorageService.VERSION,
         dataHash: '',
       },
     };
@@ -234,3 +446,5 @@ export class StorageService {
     );
   }
 }
+
+export const StorageService = new StorageServiceClass(); 

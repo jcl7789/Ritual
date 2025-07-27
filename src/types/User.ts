@@ -1,10 +1,23 @@
 import { ActivityType, Entry } from ".";
 
 export interface User {
-  userId: number;
   entries: Entry[];
   createdAt?: Date;
   updatedAt?: Date;
+  profile: UserProfile;
+}
+
+export interface UserProfile {
+  name: string;
+  age: number;
+  partners: Partner[];
+  actualPartner: number;
+  language: 'en' | 'es';
+}
+
+export interface Partner {
+  id: string;
+  name: string;
 }
 
 // Tipos para estadísticas

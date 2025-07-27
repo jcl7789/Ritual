@@ -1,5 +1,3 @@
-// src/screens/FirstLoad.tsx
-
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -254,7 +252,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const renderStep = (step: OnboardingStep, index: number) => (
     <View key={step.id} style={styles.stepContainer}>
       <LinearGradient
-        colors={step.gradient}
+        colors={step.gradient as [import('react-native').ColorValue, import('react-native').ColorValue, ...import('react-native').ColorValue[]]}
         style={styles.iconContainer}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -368,7 +366,6 @@ const styles = StyleSheet.create({
   progressDot: {
     height: 8,
     borderRadius: 4,
-    transition: 'all 0.3s ease',
   },
   scrollView: {
     flex: 1,

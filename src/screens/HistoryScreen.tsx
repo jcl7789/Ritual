@@ -122,7 +122,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
             <View style={styles.activityDetails}>
               <Text style={styles.activityName}>{t(item.activityType.name)}</Text>
               {item.partner && (
-                <Text style={styles.partnerName}>{t('history.time.with', { partner: item.partner })}</Text>
+                <Text style={styles.partnerName}>{t('history.time.with', { partner: typeof item.partner === 'object' && item.partner !== null ? (item.partner as any).name : item.partner })}</Text>
               )}
             </View>
           </View>

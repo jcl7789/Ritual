@@ -1,6 +1,6 @@
 // src/screens/AddEntryScreen.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { addEntryAsync } from '../store/slices/entriesSlice';
 import { DEFAULT_ACTIVITIES, ActivityType, CreateEntryInput } from '../types/Entry';
 import { AddEntryScreenProps } from '../types/Navigation';
-import { AppDispatch } from '../store/store';
+import { AppDispatch, RootState } from '../store/store';
 
 interface FormData {
   activityType: ActivityType;
@@ -32,10 +32,30 @@ interface FormData {
 export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.entries);
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [selectedSatisfaction, setSelectedSatisfaction] = useState<number | null>(null);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<FormData>();
+  const getActualPartner = (): string => {
+    if (user?.profile?.actualPartner) {
+      return user.profile.partners[user.profile.actualPartner]?.name ?? '';
+    }
+    return '';
+  };
+
+
+  const { control, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
+    defaultValues: {
+      partner: getActualPartner(),
+    }
+  });
+
+   // Actualizar el valor por defecto cuando el perfil de usuario cambie
+  useEffect(() => {
+    if (user?.profile?.actualPartner) {
+      setValue('partner', user.profile.partners[user.profile.actualPartner]?.name ?? '');
+    }
+  }, [user, setValue]);
 
   const onSubmit = async (data: FormData) => {
     if (!selectedActivity) {

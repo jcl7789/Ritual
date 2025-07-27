@@ -11,20 +11,14 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
-import CountryFlag from 'react-native-country-flag';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '../store/store';
 import { HomeScreenProps } from '../types/Navigation';
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
-  // Function to change the language
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
-
-  const { stats, entries } = useSelector((state: RootState) => state.entries);
+  const { stats, entries, user } = useSelector((state: RootState) => state.entries);
 
   const recentEntries = entries.slice(0, 3); // Últimas 3 entradas
 
@@ -36,22 +30,42 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     navigation.navigate('Settings');
   };
 
+    const getGreeting = () => {
+    if (user?.profile) {
+      const hour = new Date().getHours();
+      let greeting = '';
+      
+      if (hour < 12) {
+        greeting = t('home.greetings.morning');
+      } else if (hour < 18) {
+        greeting = t('home.greetings.afternoon');
+      } else {
+        greeting = t('home.greetings.evening');
+      }
+      
+      return `${greeting}, ${user.profile.name}!`;
+    }
+    return t('home.title');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30 }} showsVerticalScrollIndicator={true}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>{t('home.title')}</Text>
+          <Text style={styles.title}>{getGreeting()}</Text>
           <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
+
+          {/* Language Switcher */}
 
           <View style={styles.settingsContainer}>
             {/* settings button */}
             <TouchableOpacity
-              style={[styles.button, i18n.language === 'es' ? styles.activeButton : styles.inactiveButton]}
+              style={[styles.button, styles.activeButton]}
               onPress={goToSettings} // Call changeLanguage with 'es' on press
               accessibilityLabel={t('settings')} // Accessibility label for Spanish button
             >
-              <Ionicons name="settings" size={24} color={i18n.language === 'es' ? 'white' : '#4b5563'} />
+              <Ionicons name="settings" size={24} color={'white'} />
             </TouchableOpacity>
           </View>
 

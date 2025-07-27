@@ -350,7 +350,7 @@ const settingsSlice = createSlice({
       })
       .addCase(initializeSettings.fulfilled, (state, action) => {
         state.loading = false;
-        state.settings = action.payload;
+        state.settings = action.payload as AppSettings;
         state.initialized = true;
       })
       .addCase(initializeSettings.rejected, (state, action) => {
@@ -478,7 +478,7 @@ const settingsSlice = createSlice({
       })
       .addCase(importSettings.fulfilled, (state, action) => {
         state.loading = false;
-        state.settings = action.payload;
+        state.settings = action.payload as AppSettings;
       })
       .addCase(importSettings.rejected, (state, action) => {
         state.loading = false;

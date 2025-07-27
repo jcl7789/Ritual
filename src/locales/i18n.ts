@@ -18,12 +18,26 @@ const resources = {
   },
 };
 
+// Detectar idioma del sistema
+const getDeviceLanguage = (): string => {
+  const locales = Localization.getLocales();
+  if (locales && locales.length > 0) {
+    const primaryLocale = locales[0];
+    const languageCode = primaryLocale.languageCode;
+    
+    // Soportar solo inglés y español
+    if (languageCode === 'es') return 'es';
+    return 'en'; // Default a inglés
+  }
+  return 'en';
+};
+
 // Configuración de i18next
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: Localization.getLocales()[0]?.languageCode || 'en', // Detectar idioma del dispositivo
+    lng: getDeviceLanguage(), // Detectar idioma del dispositivo
     fallbackLng: 'en', // Idioma por defecto
     
     // Namespace por defecto
@@ -32,6 +46,9 @@ i18n
     // Configuración de interpolación
     interpolation: {
       escapeValue: false, // React ya escapa por defecto
+    },
+    react: {
+      useSuspense: false, // Desactivar suspense para evitar problemas con la carga de traducciones
     },
     
     // Configuración de detección

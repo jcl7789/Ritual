@@ -5,6 +5,7 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { AppDispatch, RootState, store } from './src/store/store';
 import Navigation from './src/components/navigation/Navigation';
+import FirstLoadScreen from './src/screens/FirstLoadScreen';
 import './src/locales/i18n'; // Inicializar i18n
 import { useTranslation } from 'react-i18next';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
@@ -14,7 +15,7 @@ import { initializeApp } from './src/store/slices/entriesSlice';
 function AppInitializer() {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const { initialized, loading, error } = useSelector((state: RootState) => state.entries);
+  const { initialized, loading, error, isFirstTime } = useSelector((state: RootState) => state.entries);
 
   useEffect(() => {
     if (!initialized) {
@@ -45,6 +46,19 @@ function AppInitializer() {
     );
   }
 
+  // Si es primera vez, mostrar pantalla de registro
+  if (isFirstTime) {
+    return (
+      <FirstLoadScreen 
+        onComplete={() => {
+          // La FirstLoad ya maneja la inicialización del perfil
+          // El estado se actualizará automáticamente
+        }} 
+      />
+    );
+  }
+
+  // App principal
   return (
     <NavigationContainer>
       <Navigation />

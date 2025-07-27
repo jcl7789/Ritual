@@ -11,6 +11,23 @@
       }
     }
   },
+  "welcome": {
+    "title": "Bienvenido a Ritual",
+    "subtitle": "Tu registro privado de intimidad",
+    "description": "Registra tus momentos íntimos de forma privada y segura. Todos tus datos están cifrados y se almacenan solo en tu dispositivo."
+  },
+  "profile": {
+    "title": "Crea tu perfil",
+    "subtitle": "Cuéntanos un poco sobre ti",
+    "description": "Esta información ayuda a personalizar tu experiencia y se almacena de forma segura en tu dispositivo.",
+    "name": "Tu nombre",
+    "namePlaceholder": "Ingresa tu nombre",
+    "age": "Tu edad",
+    "agePlaceholder": "Ingresa tu edad",
+    "partnerName": "Nombre de tu pareja (opcional)",
+    "partnerNamePlaceholder": "Ingresa el nombre de tu pareja",
+    "partnerNameHelper": "Esto se usará como valor predeterminado al registrar actividades juntos."
+  },
   "navigation": {
     "home": "Inicio",
     "history": "Historial",
