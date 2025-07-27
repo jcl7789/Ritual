@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   Animated,
+  Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -80,6 +81,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'es'>('en');
   const [enableBiometric, setEnableBiometric] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
   
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -126,32 +128,68 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   };
 
   const handleComplete = async () => {
+    if (isCompleting) return; // Prevenir múltiples ejecuciones
+    
+    setIsCompleting(true);
+    
     try {
-      // Aplicar configuraciones seleccionadas
-      await dispatch(updateLanguage(selectedLanguage));
+      console.log('Starting onboarding completion...');
       
+      // 1. Aplicar configuración de idioma
+      console.log('Setting language to:', selectedLanguage);
+      await dispatch(updateLanguage(selectedLanguage)).unwrap();
+      
+      // 2. Aplicar configuración de privacidad si está habilitada
       if (enableBiometric) {
+        console.log('Enabling biometric authentication');
         await dispatch(updatePrivacy({ 
           requireAuth: true, 
           authMethod: 'biometric' 
-        }));
+        })).unwrap();
       }
       
-      // Marcar onboarding como completado
-      await dispatch(completeOnboarding());
+      // 3. Marcar onboarding como completado
+      console.log('Completing onboarding...');
+      await dispatch(completeOnboarding()).unwrap();
       
-      // Callback para indicar que se completó
+      console.log('Onboarding completed successfully');
+      
+      // 4. Callback para indicar que se completó (esto actualizará el estado en App)
       onComplete();
+      
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      // Continuar de todas formas
-      onComplete();
+      
+      // Mostrar error al usuario
+      Alert.alert(
+        t('onboarding.error.title') || 'Error',
+        t('onboarding.error.message') || 'There was an error setting up the app. Please try again.',
+        [
+          {
+            text: t('common.retry') || 'Retry',
+            onPress: () => {
+              setIsCompleting(false);
+              handleComplete();
+            }
+          },
+          {
+            text: t('common.continue') || 'Continue anyway',
+            onPress: () => {
+              // Continuar de todas formas
+              onComplete();
+            }
+          }
+        ]
+      );
+    } finally {
+      setIsCompleting(false);
     }
   };
 
-  const handleSkip = () => {
-    handleComplete();
-  };
+  // Remover la función handleSkip para que no sea omitible
+  // const handleSkip = () => {
+  //   handleComplete();
+  // };
 
   const renderLanguageSelector = () => {
     if (currentStep !== 0) return null;
@@ -273,11 +311,9 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      {/* Header - Removido el botón Skip para que no sea omitible */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-          <Text style={styles.skipText}>{t('onboarding.skip')}</Text>
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{t('onboarding.setup')}</Text>
       </View>
 
       {/* Progress Indicator */}
@@ -320,16 +356,31 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
           style={[
             styles.navButton,
             styles.nextButton,
-            { backgroundColor: onboardingSteps[currentStep].color }
+            { backgroundColor: onboardingSteps[currentStep].color },
+            isCompleting && styles.navButtonDisabled
           ]}
+          disabled={isCompleting}
         >
-          <Text style={styles.nextButtonText}>
-            {currentStep === onboardingSteps.length - 1 
-              ? t('onboarding.getStarted') 
-              : t('onboarding.next')
-            }
-          </Text>
-          <Ionicons name="chevron-forward" size={24} color="white" />
+          {isCompleting ? (
+            <>
+              <Animated.View style={{ marginRight: 8 }}>
+                <Ionicons name="refresh" size={24} color="white" />
+              </Animated.View>
+              <Text style={styles.nextButtonText}>
+                {t('onboarding.saving') || 'Saving...'}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.nextButtonText}>
+                {currentStep === onboardingSteps.length - 1 
+                  ? t('onboarding.getStarted') 
+                  : t('onboarding.next')
+                }
+              </Text>
+              <Ionicons name="chevron-forward" size={24} color="white" />
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -342,10 +393,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 10,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
   },
   skipButton: {
     paddingVertical: 8,
@@ -513,7 +568,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   nextButton: {
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

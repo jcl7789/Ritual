@@ -11,10 +11,34 @@
       }
     }
   },
-  "welcome": {
-    "title": "Bienvenido a Ritual",
-    "subtitle": "Tu registro privado de intimidad",
-    "description": "Registra tus momentos íntimos de forma privada y segura. Todos tus datos están cifrados y se almacenan solo en tu dispositivo."
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenido a Ritual",
+      "subtitle": "Tu registro privado de intimidad",
+      "description": "Registra tus momentos íntimos de forma privada y segura. Todos tus datos están cifrados y almacenados solo en tu dispositivo."
+    },
+    "privacy": {
+      "title": "Privacidad ante todo",
+      "subtitle": "Tus datos son solo tuyos",
+      "description": "Ritual no comparte tus datos con nadie. Todo se almacena localmente en tu dispositivo, garantizando tu privacidad."
+    },
+    "tracking": {
+      "title": "Registra tu intimidad",
+      "subtitle": "Registra tus actividades fácilmente",
+      "description": "Registra tus actividades íntimas con facilidad. Ritual te ayuda a llevar un seguimiento de tus experiencias y sentimientos."
+    },
+    "features": {
+      "title": "Funciones",
+      "subtitle": "Lo que ofrece Ritual",
+      "description": "Ritual proporciona una interfaz simple e intuitiva para registrar tus actividades, ver estadísticas y gestionar tus datos de forma segura."
+    },
+    "selectLanguage": "Selecciona tu idioma",
+    "enableBiometric": "Activar autenticación biométrica",
+    "biometricDescription": "Usa tu huella o rostro para proteger tus datos",
+    "previous": "Atrás",
+    "next": "Siguiente",
+    "getStarted": "Comenzar",
+    "skip": "Saltar"
   },
   "profile": {
     "title": "Crea tu perfil",

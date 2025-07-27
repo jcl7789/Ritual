@@ -23,6 +23,12 @@ function AppInitializer() {
     }
   }, [dispatch, initialized]);
 
+  const handleOnboardingComplete = () => {
+    console.log('Onboarding completed callback received');
+    // No necesitamos hacer nada aquí, el estado se actualizará automáticamente
+    // cuando setFirstTime(false) se ejecute en FirstLoadScreen
+  };
+
   // Pantalla de carga mientras se inicializa la app
   if (!initialized || loading) {
     return (
@@ -46,14 +52,11 @@ function AppInitializer() {
     );
   }
 
-  // Si es primera vez, mostrar pantalla de registro
+  // Si es primera vez, mostrar pantalla de configuración inicial
   if (isFirstTime) {
     return (
       <FirstLoadScreen 
-        onComplete={() => {
-          // La FirstLoad ya maneja la inicialización del perfil
-          // El estado se actualizará automáticamente
-        }} 
+        onComplete={handleOnboardingComplete}
       />
     );
   }

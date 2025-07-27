@@ -365,6 +365,7 @@ class StorageServiceClass {
           partners: [], // Partner[] type
           actualPartner: 0,
           language: 'en',
+          biometricEnabled: false, // Agregar campo por defecto
         },
       };
     } catch (error) {

@@ -12,6 +12,7 @@ import AddEntryScreen from '../../screens/AddEntryScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
 
 import { TabParamList, RootStackParamList, TabBarIconProps } from '../../types/Navigation';
+import FirstLoad from '../../screens/FirstLoadScreen';
 
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
@@ -39,7 +40,7 @@ const getTabBarIcon = (routeName: keyof TabParamList) => {
 // Navegación por tabs
 function TabNavigator() {
   const { t } = useTranslation();
-  
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -54,13 +55,13 @@ function TabNavigator() {
         headerShown: false,
       })}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeScreen}
         options={{ tabBarLabel: t('navigation.home') }}
       />
-      <Tab.Screen 
-        name="History" 
+      <Tab.Screen
+        name="History"
         component={HistoryScreen}
         options={{ tabBarLabel: t('navigation.history') }}
       />
@@ -71,18 +72,18 @@ function TabNavigator() {
 // Navegación principal con stack
 export default function Navigation() {
   const { t } = useTranslation();
-  
+
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="Main" 
+      <Stack.Screen
+        name="Main"
         component={TabNavigator}
         options={{ headerShown: false }}
       />
-      <Stack.Screen 
-        name="AddEntry" 
+      <Stack.Screen
+        name="AddEntry"
         component={AddEntryScreen}
-        options={{ 
+        options={{
           title: t('addEntry.title'),
           presentation: 'modal',
           headerStyle: {
@@ -92,15 +93,15 @@ export default function Navigation() {
         }}
       />
       <Stack.Screen
-      name="Settings"
-      component={SettingsScreen} // Assuming you have a SettingsScreen component
-      options={{
-        title: t('settings.title'),
-        headerStyle: {
-          backgroundColor: '#6366f1',
-        },
-        headerTintColor: '#fff',
-      }}
+        name="Settings"
+        component={SettingsScreen} // Assuming you have a SettingsScreen component
+        options={{
+          title: t('settings.title'),
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+        }}
       />
     </Stack.Navigator>
   );

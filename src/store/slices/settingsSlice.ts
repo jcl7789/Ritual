@@ -240,6 +240,7 @@ export const completeOnboarding = createAsyncThunk(
       const updatedSettings = { 
         ...state.settings.settings, 
         firstLaunch: false,
+        initialized: true,
         onboardingCompleted: true 
       };
       

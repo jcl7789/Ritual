@@ -38,7 +38,7 @@ export const initializeApp = createAsyncThunk(
     try {
       // Verificar si es primera vez
       const hasExistingData = await StorageService.hasUserData();
-      
+
       if (!hasExistingData) {
         return {
           isFirstTime: true,
@@ -71,6 +71,7 @@ export const initializeApp = createAsyncThunk(
       }
       return {
         isFirstTime: false,
+        initialized: true,
         entries,
         stats,
         user,
@@ -120,6 +121,7 @@ export const initializeUserProfile = createAsyncThunk(
             partners: [], // Partner[] type
             actualPartner: 0,
             language: 'en',
+            biometricEnabled: false, // Agregar campo por defecto
           },
         };
       }
@@ -141,7 +143,7 @@ export const addEntryAsync = createAsyncThunk(
     try {
       const newEntry = await StorageService.saveEntry(entryData);
       const updatedStats = await StorageService.getUserStats();
-      
+
       return {
         entry: newEntry,
         stats: updatedStats,
@@ -159,7 +161,7 @@ export const deleteEntryAsync = createAsyncThunk(
     try {
       await StorageService.deleteEntry(entryId);
       const updatedStats = await StorageService.getUserStats();
-      
+
       return {
         entryId,
         stats: updatedStats,
@@ -179,7 +181,7 @@ export const loadEntriesAsync = createAsyncThunk(
         StorageService.getEntries(),
         StorageService.getUserStats(),
       ]);
-      
+
       return {
         entries,
         stats,
@@ -282,7 +284,7 @@ const entriesSlice = createSlice({
         state.entries = action.payload.entries;
         state.stats = action.payload.stats;
         state.user = action.payload.user ?? null;
-        
+
       })
       .addCase(initializeApp.rejected, (state, action) => {
         state.loading = false;

@@ -34,6 +34,10 @@ export type HistoryScreenProps = {
   route: any;
 };
 
+export interface FirstLoadProps {
+  onComplete: () => void;
+}
+
 // Tipos para componentes de navegación
 export interface TabBarIconProps {
   focused: boolean;

@@ -13,6 +13,8 @@ export interface UserProfile {
   partners: Partner[];
   actualPartner: number;
   language: 'en' | 'es';
+  biometricEnabled: boolean;
+  
 }
 
 export interface Partner {

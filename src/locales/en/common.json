@@ -11,10 +11,34 @@
       }
     }
   },
-  "welcome": {
-    "title": "Welcome to Ritual",
-    "subtitle": "Your private intimacy tracker",
-    "description": "Track your intimate moments privately and securely. All your data is encrypted and stored only on your device."
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Ritual",
+      "subtitle": "Your private intimacy tracker",
+      "description": "Track your intimate moments privately and securely. All your data is encrypted and stored only on your device."
+    },
+    "privacy": {
+      "title": "Privacy First",
+      "subtitle": "Your data is yours alone",
+      "description": "Ritual does not share your data with anyone. Everything is stored locally on your device, ensuring your privacy."
+    },
+    "tracking": {
+      "title": "Track Your Intimacy",
+      "subtitle": "Log your activities easily",
+      "description": "Record your intimate activities with ease. Ritual helps you keep track of your experiences and feelings."
+    },
+    "features": {
+      "title": "Features",
+      "subtitle": "What Ritual offers",
+      "description": "Ritual provides a simple and intuitive interface to log your activities, view statistics, and manage your data securely."
+    },
+    "selectLanguage": "Select your language",
+    "enableBiometric": "Enable biometric authentication",
+    "biometricDescription": "Use your fingerprint or face to secure your data",
+    "previous": "Back",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "skip": "Skip"
   },
   "profile": {
     "title": "Create Your Profile",
