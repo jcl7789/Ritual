@@ -10,6 +10,7 @@ import {
   Image,
   Animated,
   Alert,
+  TextInput,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +21,8 @@ import { AppDispatch } from '../store/store';
 import { completeOnboarding, updateLanguage, updatePrivacy } from '../store/slices/settingsSlice';
 import CountryFlag from 'react-native-country-flag';
 import { getDeviceLanguage } from '../locales/i18n';
+import { UserProfile } from '../types';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -42,6 +45,15 @@ const onboardingSteps: OnboardingStep[] = [
     icon: 'heart-outline',
     color: '#6366f1',
     gradient: ['#6366f1', '#8b5cf6']
+  },
+  {
+    id: 'profile',
+    title: 'onboarding.profile.title',
+    subtitle: 'onboarding.profile.subtitle',
+    description: 'onboarding.profile.description',
+    icon: 'shield-checkmark-outline',
+    color: '#050f96ff',
+    gradient: ['#050f96ff', '#1b27c7ff']
   },
   {
     id: 'privacy',
@@ -73,20 +85,56 @@ const onboardingSteps: OnboardingStep[] = [
 ];
 
 interface FirstLoadProps {
-  onComplete: () => void;
+  onComplete: (userProfile: UserProfile) => void;
 }
 
 export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  
+
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'es'>(getDeviceLanguage() as 'en' | 'es');
   const [enableBiometric, setEnableBiometric] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
-  
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  // Refs deben estar al nivel del componente
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: '',
+      age: 0,
+      partners: [{ id: '', name: '' }],
+      actualPartner: 0,
+      language: selectedLanguage,
+      biometricEnabled: enableBiometric,
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'partners',
+  });
+
+  const onProfileSubmit = (data: UserProfile) => {
+    setUserProfile({
+      ...data,
+      partners: data.partners
+        .filter(partner => partner.name.trim() !== '') // Filtra los partners sin nombre
+        .map(partner => ({
+          ...partner,
+          id: partner.id || crypto.randomUUID(), // Genera un UUID si no existe un ID
+        })),
+    });
+  };
 
   const handleNext = () => {
     if (currentStep < onboardingSteps.length - 1) {
@@ -98,7 +146,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
       }).start(() => {
         setCurrentStep(currentStep + 1);
         scrollViewRef.current?.scrollTo({ x: (currentStep + 1) * screenWidth, animated: false });
-        
+
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 300,
@@ -119,7 +167,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
       }).start(() => {
         setCurrentStep(currentStep - 1);
         scrollViewRef.current?.scrollTo({ x: (currentStep - 1) * screenWidth, animated: false });
-        
+
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 300,
@@ -131,37 +179,39 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
   const handleComplete = async () => {
     if (isCompleting) return; // Prevenir múltiples ejecuciones
-    
+
     setIsCompleting(true);
-    
+
     try {
-      console.log('Starting onboarding completion...');
-      
       // 1. Aplicar configuración de idioma
-      console.log('Setting language to:', selectedLanguage);
       await dispatch(updateLanguage(selectedLanguage)).unwrap();
-      
+
       // 2. Aplicar configuración de privacidad si está habilitada
       if (enableBiometric) {
-        console.log('Enabling biometric authentication');
-        await dispatch(updatePrivacy({ 
-          requireAuth: true, 
-          authMethod: 'biometric' 
+        await dispatch(updatePrivacy({
+          requireAuth: true,
+          authMethod: 'biometric'
         })).unwrap();
       }
-      
+
       // 3. Marcar onboarding como completado
-      console.log('Completing onboarding...');
       await dispatch(completeOnboarding()).unwrap();
-      
-      console.log('Onboarding completed successfully');
-      
+
       // 4. Callback para indicar que se completó (esto actualizará el estado en App)
-      onComplete();
-      
+      const finalUserProfile: UserProfile = userProfile || {
+        name: '',
+        age: 0,
+        partners: [],
+        actualPartner: 0,
+        language: selectedLanguage,
+        biometricEnabled: enableBiometric
+      };
+
+      onComplete(finalUserProfile);
+
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      
+
       // Mostrar error al usuario
       Alert.alert(
         t('onboarding.error.title') || 'Error',
@@ -178,7 +228,15 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
             text: t('common.continue') || 'Continue anyway',
             onPress: () => {
               // Continuar de todas formas
-              onComplete();
+              const finalUserProfile: UserProfile = userProfile || {
+                name: '',
+                age: 0,
+                partners: [],
+                actualPartner: 0,
+                language: selectedLanguage,
+                biometricEnabled: enableBiometric
+              };
+              onComplete(finalUserProfile);
             }
           }
         ]
@@ -187,11 +245,6 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
       setIsCompleting(false);
     }
   };
-
-  // Remover la función handleSkip para que no sea omitible
-  // const handleSkip = () => {
-  //   handleComplete();
-  // };
 
   const renderLanguageSelector = () => {
     if (currentStep !== 0) return null;
@@ -213,7 +266,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
             <CountryFlag
               isoCode="ES"
               size={32}
-              style={styles.languageFlag}/>
+              style={styles.languageFlag} />
             <Text style={[
               styles.languageText,
               selectedLanguage === 'es' && styles.languageTextActive
@@ -235,7 +288,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
             <CountryFlag
               isoCode="US"
               size={32}
-              style={styles.languageFlag}/>
+              style={styles.languageFlag} />
             <Text style={[
               styles.languageText,
               selectedLanguage === 'en' && styles.languageTextActive
@@ -248,8 +301,77 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
     );
   };
 
-  const renderBiometricOption = () => {
+  const renderProfileForm = () => {
     if (currentStep !== 1) return null;
+    return (
+      <View style={styles.profileForm}>
+
+        <Controller
+          control={control}
+          name="name"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.textInput}
+              placeholder={t('onboarding.profile.namePlaceholder')}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="age"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.textInput}
+              placeholder={t('onboarding.profile.agePlaceholder')}
+              keyboardType="numeric"
+              
+              value={value?.toString()}
+              onChangeText={(text) => onChange(parseInt(text))}
+            />
+          )}
+        />
+
+        {/* Lista de parejas */}
+        {fields.map((field, index) => (
+          <View key={field.id} style={styles.partnerRow}>
+            <Controller
+              control={control}
+              name={`partners.${index}.name`}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.partnerInput}
+                  placeholder={t('onboarding.profile.partnerNamePlaceholder')}
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
+            />
+            <TouchableOpacity
+              style={styles.removePartnerButton}
+              onPress={() => remove(index)}
+            >
+              <Ionicons name="trash-outline" size={24} color="#dc2626" />
+            </TouchableOpacity>
+          </View>
+        ))}
+
+        <TouchableOpacity
+          style={styles.addPartnerButton}
+          onPress={() => append({ id: '', name: '' })}
+        >
+          <Ionicons name="add-circle-outline" size={24} color="#4ade80" />
+          <Text style={styles.addPartnerText}>{t('onboarding.profile.addPartner')}</Text>
+        </TouchableOpacity>
+
+      </View>
+    );
+  }
+
+  const renderBiometricOption = () => {
+    if (currentStep !== 2) return null;
 
     return (
       <View style={styles.optionContainer}>
@@ -260,10 +382,10 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
           ]}
           onPress={() => setEnableBiometric(!enableBiometric)}
         >
-          <Ionicons 
-            name={enableBiometric ? 'checkbox' : 'square-outline'} 
-            size={24} 
-            color={enableBiometric ? '#6366f1' : '#9ca3af'} 
+          <Ionicons
+            name={enableBiometric ? 'checkbox' : 'square-outline'}
+            size={24}
+            color={enableBiometric ? '#6366f1' : '#9ca3af'}
           />
           <View style={styles.biometricTextContainer}>
             <Text style={styles.biometricTitle}>
@@ -298,7 +420,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const renderStep = (step: OnboardingStep, index: number) => (
     <View key={step.id} style={styles.stepContainer}>
       <LinearGradient
-        colors={step.gradient as [import('react-native').ColorValue, import('react-native').ColorValue, ...import('react-native').ColorValue[]]}
+        colors={step.gradient as [string, string]}
         style={styles.iconContainer}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -312,6 +434,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
         <Text style={styles.stepDescription}>{t(step.description)}</Text>
 
         {renderLanguageSelector()}
+        {renderProfileForm()}
         {renderBiometricOption()}
       </Animated.View>
     </View>
@@ -319,7 +442,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header - Removido el botón Skip para que no sea omitible */}
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{t('onboarding.setup')}</Text>
       </View>
@@ -381,8 +504,8 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
           ) : (
             <>
               <Text style={styles.nextButtonText}>
-                {currentStep === onboardingSteps.length - 1 
-                  ? t('onboarding.getStarted') 
+                {currentStep === onboardingSteps.length - 1
+                  ? t('onboarding.getStarted')
                   : t('onboarding.next')
                 }
               </Text>
@@ -600,5 +723,110 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     marginRight: 8,
+  },
+  profileForm: {
+    flex: 1, // Ocupa todo el espacio disponible
+    padding: 20,
+    backgroundColor: '#f8f8f8', // Un fondo claro
+    justifyContent: 'center', // Centra el contenido verticalmente
+    alignItems: 'center', // Centra el contenido horizontalmente
+  },
+  formTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  formSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 30,
+    textAlign: 'center',
+    paddingHorizontal: 15,
+  },
+  textInput: {
+    width: '90%', // Ocupa la mayor parte del ancho
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+    fontSize: 16,
+    shadowColor: '#000', // Sombra para dar profundidad
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Elevación para Android
+  },
+  partnerRow: {
+    flexDirection: 'row', // Elementos en línea
+    alignItems: 'center',
+    width: '90%',
+    marginBottom: 10,
+  },
+  partnerInput: {
+    flex: 1, // Ocupa el espacio restante
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    fontSize: 16,
+    marginRight: 10, // Espacio entre el input y el botón
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  removePartnerButton: {
+    padding: 10,
+    borderRadius: 25, // Botón redondo
+    backgroundColor: '#ffebee', // Fondo suave para el botón de eliminar
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addPartnerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e6ffe6', // Fondo suave para el botón de añadir
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  addPartnerText: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#22c55e', // Color verde para añadir
+  },
+  submitButton: {
+    width: '90%',
+    backgroundColor: '#4f46e5', // Un azul vibrante
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });

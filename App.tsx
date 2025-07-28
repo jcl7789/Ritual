@@ -10,12 +10,15 @@ import './src/locales/i18n'; // Inicializar i18n
 import { useTranslation } from 'react-i18next';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { initializeApp } from './src/store/slices/entriesSlice';
+import { useStorage } from './src/hooks/useStorage';
+import { UserProfile } from './src/types';
 
 // Componente para manejar la inicialización
 function AppInitializer() {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { initialized, loading, error, isFirstTime } = useSelector((state: RootState) => state.entries);
+  const storage = useStorage();
 
   useEffect(() => {
     if (!initialized) {
@@ -23,10 +26,10 @@ function AppInitializer() {
     }
   }, [dispatch, initialized]);
 
-  const handleOnboardingComplete = () => {
+  const handleOnboardingComplete = async (profile: UserProfile) => {
     console.log('Onboarding completed callback received');
-    // No necesitamos hacer nada aquí, el estado se actualizará automáticamente
-    // cuando setFirstTime(false) se ejecute en FirstLoadScreen
+    await storage.saveProfile(profile);
+    // No necesitas retornar nada aquí, solo actualizar el estado
   };
 
   // Pantalla de carga mientras se inicializa la app

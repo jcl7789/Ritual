@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { StorageService } from '../services/storage/StorageService';
 import { Entry } from '../types/Entry';
+import { UserProfile } from '../types';
+import { set } from 'date-fns';
 
 export const useStorage = () => {
   const [loading, setLoading] = useState(false);
@@ -86,6 +88,19 @@ export const useStorage = () => {
     }
   };
 
+  const saveProfile = async (profile: UserProfile): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      await StorageService.initializeUserProfile(profile);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return {
     saveEntry,
     deleteEntry,
@@ -93,6 +108,7 @@ export const useStorage = () => {
     createBackup,
     exportData,
     importData,
+    saveProfile,
     loading,
     error,
   };

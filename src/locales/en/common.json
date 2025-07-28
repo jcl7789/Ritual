@@ -17,6 +17,19 @@
       "subtitle": "Your private intimacy tracker",
       "description": "Track your intimate moments privately and securely. All your data is encrypted and stored only on your device."
     },
+    "profile": {
+      "title": "Create Your Profile",
+      "subtitle": "Tell us a bit about yourself",
+      "description": "This information helps personalize your experience and is stored securely on your device.",
+      "name": "Your Name",
+      "namePlaceholder": "Enter your name",
+      "age": "Your Age",
+      "agePlaceholder": "Enter your age",
+      "partnerName": "Partner's Name (Optional)",
+      "partnerNamePlaceholder": "Enter your partner's name",
+      "addPartner": "Add Partner",
+      "partnerNameHelper": "This will be used as a default when logging activities together."
+    },
     "privacy": {
       "title": "Privacy First",
       "subtitle": "Your data is yours alone",
@@ -46,18 +59,6 @@
       "message": "There was an error setting up the app. Please try again."
     }
   },
-  "profile": {
-    "title": "Create Your Profile",
-    "subtitle": "Tell us a bit about yourself",
-    "description": "This information helps personalize your experience and is stored securely on your device.",
-    "name": "Your Name",
-    "namePlaceholder": "Enter your name",
-    "age": "Your Age",
-    "agePlaceholder": "Enter your age",
-    "partnerName": "Partner's Name (Optional)",
-    "partnerNamePlaceholder": "Enter your partner's name",
-    "partnerNameHelper": "This will be used as a default when logging activities together."
-  },
   "navigation": {
     "home": "Home",
     "history": "History",
@@ -66,6 +67,11 @@
   "home": {
     "title": "Ritual",
     "subtitle": "Your personal diary",
+    "greetings": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
     "stats": {
       "total": "Total",
       "thisMonth": "This month",

@@ -380,7 +380,7 @@ class StorageServiceClass {
   async hasUserData(): Promise<boolean> {
     try {
       const data = await this.getData();
-      return data?.user ? true : false;
+      return data?.user.profile?.name ? true : false;
     }
     catch (error) {
       console.error('Error checking user data:', error);
@@ -394,7 +394,7 @@ class StorageServiceClass {
       if (!data) throw new Error('Storage not initialized');
 
       // Verificar si ya existe un perfil de usuario
-      if (data.user && data.user.profile) {
+      if (data.user && data.user.profile && data.user.profile.name != '') {
         console.warn('User profile already exists, skipping initialization');
         return;
       }

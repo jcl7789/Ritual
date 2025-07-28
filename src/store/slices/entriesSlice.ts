@@ -36,7 +36,11 @@ export const initializeApp = createAsyncThunk(
   'entries/initializeApp',
   async (_, { rejectWithValue }) => {
     try {
-      // Verificar si es primera vez
+      // *** Paso 1: Inicializar el StorageService ***
+      // Esto asegura que la estructura de datos base exista en AsyncStorage
+      await StorageService.initializeStorage();
+
+      // *** Paso 2: Verificar si ya hay datos de usuario existentes ***
       const hasExistingData = await StorageService.hasUserData();
 
       if (!hasExistingData) {
