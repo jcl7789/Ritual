@@ -19,7 +19,7 @@ const resources = {
 };
 
 // Detectar idioma del sistema
-const getDeviceLanguage = (): string => {
+export const getDeviceLanguage = (): string => {
   const locales = Localization.getLocales();
   if (locales && locales.length > 0) {
     const primaryLocale = locales[0];

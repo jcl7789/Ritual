@@ -18,6 +18,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppDispatch } from '../store/store';
 import { completeOnboarding, updateLanguage, updatePrivacy } from '../store/slices/settingsSlice';
+import CountryFlag from 'react-native-country-flag';
+import { getDeviceLanguage } from '../locales/i18n';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -79,7 +81,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const dispatch = useDispatch<AppDispatch>();
   
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'es'>('en');
+  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'es'>(getDeviceLanguage() as 'en' | 'es');
   const [enableBiometric, setEnableBiometric] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   
@@ -208,7 +210,10 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
               i18n.changeLanguage('es');
             }}
           >
-            <Text style={styles.languageFlag}>🇪🇸</Text>
+            <CountryFlag
+              isoCode="ES"
+              size={32}
+              style={styles.languageFlag}/>
             <Text style={[
               styles.languageText,
               selectedLanguage === 'es' && styles.languageTextActive
@@ -227,7 +232,10 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
               i18n.changeLanguage('en');
             }}
           >
-            <Text style={styles.languageFlag}>🇺🇸</Text>
+            <CountryFlag
+              isoCode="US"
+              size={32}
+              style={styles.languageFlag}/>
             <Text style={[
               styles.languageText,
               selectedLanguage === 'en' && styles.languageTextActive
