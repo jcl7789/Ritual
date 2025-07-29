@@ -1,5 +1,19 @@
 import * as yup from 'yup';
 
+// Schema para perfil de usuario
+export const userProfileSchema = yup.object().shape({
+  name: yup.string()
+    .required('El nombre es requerido')
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(50, 'El nombre no puede exceder los 50 caracteres'),
+  age: yup.number()
+    .required('La edad es requerida')
+    .positive('La edad debe ser un número positivo')
+    .integer('La edad debe ser un número entero')
+    .min(12, 'La edad mínima es 12 años')
+    .max(90, 'La edad máxima es 90 años'),
+});
+
 // Schema para crear nueva entrada
 export const createEntrySchema = yup.object({
   activityType: yup.object({
@@ -8,29 +22,29 @@ export const createEntrySchema = yup.object({
     icon: yup.string().required(),
     category: yup.string().required()
   }).required('Please select an activity type'),
-  
+
   partner: yup.string()
     .trim()
     .max(50, 'Partner name must be 50 characters or less')
     .optional(),
-  
+
   duration: yup.number()
     .positive('Duration must be positive')
     .max(1440, 'Duration cannot exceed 24 hours')
     .integer('Duration must be a whole number')
     .optional(),
-  
+
   satisfaction: yup.number()
     .min(1, 'Satisfaction must be between 1 and 5')
     .max(5, 'Satisfaction must be between 1 and 5')
     .integer('Satisfaction must be a whole number')
     .optional(),
-  
+
   notes: yup.string()
     .trim()
     .max(500, 'Notes must be 500 characters or less')
     .optional(),
-  
+
   date: yup.date()
     .max(new Date(), 'Date cannot be in the future')
     .required('Date is required')
@@ -40,21 +54,21 @@ export const createEntrySchema = yup.object({
 export const entryFiltersSchema = yup.object({
   startDate: yup.date().optional(),
   endDate: yup.date()
-    .when('startDate', (startDate, schema) => 
+    .when('startDate', (startDate, schema) =>
       startDate ? schema.min(startDate, 'End date must be after start date') : schema
     )
     .optional(),
-  
+
   activityTypes: yup.array()
     .of(yup.string().required())
     .optional(),
-  
+
   minSatisfaction: yup.number()
     .min(1, 'Minimum satisfaction must be between 1 and 5')
     .max(5, 'Minimum satisfaction must be between 1 and 5')
     .integer()
     .optional(),
-  
+
   partner: yup.string()
     .trim()
     .max(50, 'Partner name must be 50 characters or less')
@@ -66,11 +80,11 @@ export const userSettingsSchema = yup.object({
   language: yup.string()
     .oneOf(['en', 'es'], 'Invalid language')
     .required('Language is required'),
-  
+
   theme: yup.string()
     .oneOf(['light', 'dark', 'auto'], 'Invalid theme')
     .required('Theme is required'),
-  
+
   notifications: yup.object({
     enabled: yup.boolean().required(),
     reminderTime: yup.string()
@@ -80,7 +94,7 @@ export const userSettingsSchema = yup.object({
       .oneOf(['daily', 'weekly', 'never'], 'Invalid frequency')
       .required()
   }).required(),
-  
+
   privacy: yup.object({
     requireAuth: yup.boolean().required(),
     autoLock: yup.boolean().required(),
@@ -90,7 +104,7 @@ export const userSettingsSchema = yup.object({
       .required(),
     hideInRecents: yup.boolean().required()
   }).required(),
-  
+
   backup: yup.object({
     autoBackup: yup.boolean().required(),
     backupFrequency: yup.string()
@@ -115,7 +129,7 @@ export const importDataSchema = yup.object({
       updatedAt: yup.date().required()
     }))
     .required(),
-  
+
   settings: yup.object().required(),
   user: yup.object().required(),
   metadata: yup.object({
@@ -130,3 +144,4 @@ export type CreateEntryFormData = yup.InferType<typeof createEntrySchema>;
 export type EntryFiltersFormData = yup.InferType<typeof entryFiltersSchema>;
 export type UserSettingsFormData = yup.InferType<typeof userSettingsSchema>;
 export type ImportDataFormData = yup.InferType<typeof importDataSchema>;
+export type UserProfileFormData = yup.InferType<typeof userProfileSchema>;

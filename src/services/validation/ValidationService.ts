@@ -1,11 +1,13 @@
-import { 
-  createEntrySchema, 
-  entryFiltersSchema, 
-  userSettingsSchema, 
+import {
+  createEntrySchema,
+  entryFiltersSchema,
+  userSettingsSchema,
   importDataSchema,
+  userProfileSchema,
   CreateEntryFormData,
   EntryFiltersFormData,
-  UserSettingsFormData
+  UserSettingsFormData,
+  UserProfileFormData
 } from '../../schemas/validation';
 import { ValidationError } from 'yup';
 
@@ -20,17 +22,39 @@ export interface ValidationErrors {
 }
 
 export class ValidationService {
-  
+
+   /**
+   * Valida datos del perfil de usuario
+   */
+  static async validateUserProfile(data: any): Promise<ValidationResult<UserProfileFormData>> {
+    try {
+      const validData = await userProfileSchema.validate(data, {
+        abortEarly: false,
+        stripUnknown: true
+      });
+
+      return {
+        isValid: true,
+        data: validData
+      };
+    } catch (error) {
+      return {
+        isValid: false,
+        errors: this.formatValidationErrors(error as ValidationError)
+      };
+    }
+  }
+
   /**
    * Valida datos para crear nueva entrada
    */
   static async validateCreateEntry(data: any): Promise<ValidationResult<CreateEntryFormData>> {
     try {
-      const validData = await createEntrySchema.validate(data, { 
+      const validData = await createEntrySchema.validate(data, {
         abortEarly: false,
-        stripUnknown: true 
+        stripUnknown: true
       });
-      
+
       return {
         isValid: true,
         data: validData
@@ -48,11 +72,11 @@ export class ValidationService {
    */
   static async validateEntryFilters(data: any): Promise<ValidationResult<EntryFiltersFormData>> {
     try {
-      const validData = await entryFiltersSchema.validate(data, { 
+      const validData = await entryFiltersSchema.validate(data, {
         abortEarly: false,
-        stripUnknown: true 
+        stripUnknown: true
       });
-      
+
       return {
         isValid: true,
         data: validData
@@ -70,11 +94,11 @@ export class ValidationService {
    */
   static async validateUserSettings(data: any): Promise<ValidationResult<UserSettingsFormData>> {
     try {
-      const validData = await userSettingsSchema.validate(data, { 
+      const validData = await userSettingsSchema.validate(data, {
         abortEarly: false,
-        stripUnknown: true 
+        stripUnknown: true
       });
-      
+
       return {
         isValid: true,
         data: validData
@@ -92,17 +116,17 @@ export class ValidationService {
    */
   static async validateImportData(data: any): Promise<ValidationResult<any>> {
     try {
-      const validData = await importDataSchema.validate(data, { 
+      const validData = await importDataSchema.validate(data, {
         abortEarly: false,
-        stripUnknown: true 
+        stripUnknown: true
       });
-      
+
       // Validaciones adicionales específicas
       const additionalValidation = this.validateImportDataIntegrity(validData);
       if (!additionalValidation.isValid) {
         return additionalValidation;
       }
-      
+
       return {
         isValid: true,
         data: validData
@@ -126,7 +150,7 @@ export class ValidationService {
       if (entry.createdAt > entry.updatedAt) {
         errors[`entries.${index}.dates`] = 'Created date cannot be after updated date';
       }
-      
+
       if (new Date(entry.date) > new Date()) {
         errors[`entries.${index}.date`] = 'Entry date cannot be in the future';
       }
@@ -134,10 +158,10 @@ export class ValidationService {
 
     // Verificar duplicados por ID
     const entryIds = data.entries.map((entry: any) => entry.id);
-    const duplicateIds = entryIds.filter((id: string, index: number) => 
+    const duplicateIds = entryIds.filter((id: string, index: number) =>
       entryIds.indexOf(id) !== index
     );
-    
+
     if (duplicateIds.length > 0) {
       errors.duplicateEntries = `Duplicate entry IDs found: ${duplicateIds.join(', ')}`;
     }
@@ -166,7 +190,7 @@ export class ValidationService {
    */
   private static formatValidationErrors(error: ValidationError): ValidationErrors {
     const errors: ValidationErrors = {};
-    
+
     if (error.inner && error.inner.length > 0) {
       error.inner.forEach((err) => {
         if (err.path) {
@@ -176,7 +200,7 @@ export class ValidationService {
     } else if (error.path) {
       this.setNestedError(errors, error.path, error.message);
     }
-    
+
     return errors;
   }
 
@@ -186,7 +210,7 @@ export class ValidationService {
   private static setNestedError(errors: ValidationErrors, path: string, message: string): void {
     const pathParts = path.split('.');
     let current = errors;
-    
+
     for (let i = 0; i < pathParts.length - 1; i++) {
       const part = pathParts[i];
       if (!(part in current)) {
@@ -194,7 +218,7 @@ export class ValidationService {
       }
       current = current[part] as ValidationErrors;
     }
-    
+
     current[pathParts[pathParts.length - 1]] = message;
   }
 
@@ -202,8 +226,8 @@ export class ValidationService {
    * Valida campo individual en tiempo real
    */
   static async validateField(
-    fieldName: string, 
-    value: any, 
+    fieldName: string,
+    value: any,
     schema: any
   ): Promise<string | null> {
     try {

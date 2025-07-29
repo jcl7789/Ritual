@@ -24,6 +24,7 @@ import { getDeviceLanguage } from '../locales/i18n';
 import { UserProfile } from '../types';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { id } from 'date-fns/locale';
+import { ValidationService } from '../services/validation/ValidationService';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -182,6 +183,28 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
           t('onboarding.error.profileIncomplete') || 'Please complete your profile before finishing.',
           [{ text: t('common.ok') || 'OK' }]
         );
+        return;
+      }
+
+      const profileValidationResult = await ValidationService.validateUserProfile(formData.profile); // Aquí asumo que userSettingsSchema puede validar el perfil. Si no, necesitarías un schema específico para el perfil.
+      if (!profileValidationResult.isValid) {
+        Alert.alert(
+          t('onboarding.error.title') || 'Error de Validación',
+          `Errores en el perfil: ${JSON.stringify(profileValidationResult.errors)}`, // Mostrar errores de validación
+          [{ text: t('common.ok') || 'OK' }]
+        );
+        setIsCompleting(false);
+        return;
+      }
+
+      const userSettingsValidationResult = await ValidationService.validateUserSettings(formData.settings);
+      if (!userSettingsValidationResult.isValid) {
+        Alert.alert(
+          t('onboarding.error.title') || 'Error de Validación',
+          `Errores en la configuración: ${JSON.stringify(userSettingsValidationResult.errors)}`,
+          [{ text: t('common.ok') || 'OK' }]
+        );
+        setIsCompleting(false);
         return;
       }
 
