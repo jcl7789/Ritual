@@ -20,13 +20,13 @@ repos:
   #     - id: prettier
   #       files: '\.(js|jsx|ts|tsx|json|css|scss|md|yaml|html)$' # Archivos que Prettier debería formatear
 
-  # # Hook para ESLint (linter de código)
-  # - repo: https://github.com/pre-commit/mirrors-eslint
-  #   rev: v9.32.0 # Revisa la última versión estable de ESLint
-  #   hooks:
-  #     - id: eslint
-  #       files: '\.(js|jsx|ts|tsx)$' # Solo lintear estos archivos
-  #       args: [--fix] # Opcional: intenta auto-corregir problemas que ESLint pueda arreglar
+  # Hook para ESLint (linter de código)
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.32.0 # Revisa la última versión estable de ESLint
+    hooks:
+      - id: eslint
+        files: '\.(js|jsx|ts|tsx)$' # Solo lintear estos archivos
+        args: [--fix] # Opcional: intenta auto-corregir problemas que ESLint pueda arreglar
 
   # # Hooks locales (para scripts específicos de tu proyecto)
   # - repo: local
