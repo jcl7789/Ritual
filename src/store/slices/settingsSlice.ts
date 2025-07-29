@@ -5,18 +5,18 @@ import { ValidationService } from '../../services/validation/ValidationService';
 export interface NotificationSettings {
   enabled: boolean;
   reminderTime?: string; // HH:MM format
-  frequency: 'daily' | 'weekly' | 'never';
-  sound: boolean;
-  vibration: boolean;
+  frequency?: 'daily' | 'weekly' | 'never';
+  sound?: boolean;
+  vibration?: boolean;
 }
 
 export interface PrivacySettings {
   requireAuth: boolean;
   authMethod: 'biometric' | 'pin' | 'pattern' | 'none';
-  autoLock: boolean;
-  autoLockTimeout: number; // seconds
-  hideInRecents: boolean;
-  privateMode: boolean;
+  autoLock?: boolean;
+  autoLockTimeout?: number; // seconds
+  hideInRecents?: boolean;
+  privateMode?: boolean;
 }
 
 export interface ThemeSettings {
@@ -27,7 +27,7 @@ export interface ThemeSettings {
 
 export interface AppSettings {
   language: 'en' | 'es';
-  theme: ThemeSettings;
+  theme?: ThemeSettings;
   notifications: NotificationSettings;
   privacy: PrivacySettings;
   firstLaunch: boolean;
@@ -271,8 +271,10 @@ const settingsSlice = createSlice({
     },
 
     setThemeMode: (state, action: PayloadAction<'light' | 'dark' | 'auto'>) => {
-      state.settings.theme.mode = action.payload;
-    },
+      if (!state.settings.theme) {
+        state.settings.theme = { mode: 'auto', primaryColor: '#6366f1', accentColor: '#ec4899' };
+      }
+      state.settings.theme.mode = action.payload;},
 
     togglePrivateMode: (state) => {
       state.settings.privacy.privateMode = !state.settings.privacy.privateMode;
@@ -334,7 +336,13 @@ const settingsSlice = createSlice({
       })
       .addCase(updateTheme.fulfilled, (state, action) => {
         state.loading = false;
-        state.settings.theme = action.payload;
+        if (!state.settings.theme) {
+          state.settings.theme = { mode: 'auto', primaryColor: '#6366f1', accentColor: '#ec4899' };
+        }
+        state.settings.theme = {
+          ...state.settings.theme,
+          ...action.payload
+        };
       })
       .addCase(updateTheme.rejected, (state, action) => {
         state.loading = false;

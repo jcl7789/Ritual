@@ -135,6 +135,7 @@
   },
   "settings": {
     "title": "Ajustes",
+    "accessibility": "Haz clic para cambiar las opciones de accesibilidad",
     "language": {
       "label": "Idioma",
       "changedTitle": "Idioma Cambiado",

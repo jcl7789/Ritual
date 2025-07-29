@@ -83,10 +83,10 @@ export const userSettingsSchema = yup.object().shape({
   theme: yup.object({
     mode: yup.string()
       .oneOf(['light', 'dark', 'auto'], 'Invalid theme mode')
-      .required('Theme mode is required'),
-    primaryColor: yup.string().required('Primary color is required'),
-    accentColor: yup.string().required('Accent color is required'),
-  }).required('Theme settings are required'),
+      ,
+    primaryColor: yup.string().optional(),
+    accentColor: yup.string().optional(),
+  }),
 
   notifications: yup.object({
     enabled: yup.boolean().required(),
@@ -95,21 +95,21 @@ export const userSettingsSchema = yup.object().shape({
       .optional(),
     frequency: yup.string()
       .oneOf(['daily', 'weekly', 'never'], 'Invalid frequency')
-      .required()
-  }).required('Notification settings are required'),
+      .optional()
+  }),
 
   privacy: yup.object({
     requireAuth: yup.boolean().required(),
     authMethod: yup.string()
       .oneOf(['biometric', 'pin', 'pattern', 'none'], 'Invalid auth method') // Asegúrate de que este enum coincida
       .required(),
-    autoLock: yup.boolean().required(),
-    autoLockTimeout: yup.number()
+    autoLock: yup.boolean().optional(),
+    autoLockTimeout: yup.number().optional()
       .min(30, 'Auto-lock timeout must be at least 30 seconds')
       .max(3600, 'Auto-lock timeout cannot exceed 1 hour')
-      .required(),
-    hideInRecents: yup.boolean().required(),
-    privateMode: yup.boolean().required(), // Agrega este si existe en AppSettings
+      ,
+    hideInRecents: yup.boolean().optional(),
+    privateMode: yup.boolean().optional(), // Agrega este si existe en AppSettings
   }).required('Privacy settings are required'),
 
   // Agrega estos campos si AppSettings los tiene y quieres validarlos

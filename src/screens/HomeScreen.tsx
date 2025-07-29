@@ -34,7 +34,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     if (user?.profile) {
       const hour = new Date().getHours();
       let greeting = '';
-      
+
       if (hour < 12) {
         greeting = t('home.greetings.morning');
       } else if (hour < 18) {
@@ -42,7 +42,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       } else {
         greeting = t('home.greetings.evening');
       }
-      
+
       return `${greeting}, ${user.profile.name}!`;
     }
     return t('home.title');
@@ -62,7 +62,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <TouchableOpacity
               style={[styles.button, styles.activeButton]}
               onPress={goToSettings}
-              accessibilityLabel={t('settings')}
+              accessibilityLabel={t('settings.accessibility')}
             >
               <Ionicons name="settings" size={24} color={'white'} />
             </TouchableOpacity>

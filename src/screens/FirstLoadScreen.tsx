@@ -124,7 +124,13 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
           requireAuth: false,
           authMethod: 'none',
         },
+        notifications: {
+          enabled: false,
+        },
         language: getDeviceLanguage() as 'en' | 'es',
+        firstLaunch: true,
+        onboardingCompleted: false,
+        analyticsEnabled: true,
       },
     },
   });
@@ -188,6 +194,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
       const profileValidationResult = await ValidationService.validateUserProfile(formData.profile); // Aquí asumo que userSettingsSchema puede validar el perfil. Si no, necesitarías un schema específico para el perfil.
       if (!profileValidationResult.isValid) {
+        console.error('Profile validation errors:', profileValidationResult.errors);
         Alert.alert(
           t('onboarding.error.title') || 'Error de Validación',
           `Errores en el perfil: ${JSON.stringify(profileValidationResult.errors)}`, // Mostrar errores de validación
@@ -199,6 +206,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
       const userSettingsValidationResult = await ValidationService.validateUserSettings(formData.settings);
       if (!userSettingsValidationResult.isValid) {
+        console.error('User settings validation errors:', userSettingsValidationResult.errors);
         Alert.alert(
           t('onboarding.error.title') || 'Error de Validación',
           `Errores en la configuración: ${JSON.stringify(userSettingsValidationResult.errors)}`,
