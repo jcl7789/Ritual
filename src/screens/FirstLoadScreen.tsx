@@ -22,9 +22,9 @@ import { completeOnboarding, updateLanguage, updatePrivacy } from '../store/slic
 import CountryFlag from 'react-native-country-flag';
 import { getDeviceLanguage } from '../locales/i18n';
 import { UserProfile } from '../types';
-import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, FieldError, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ValidationService } from '../services/validation/ValidationService';
-import { OnboardingFormData } from '../schemas/validation';
+import { maxAge, maxNameLength, minAge, minNameLength, OnboardingFormData } from '../schemas/validation';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -98,6 +98,8 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'es'>(getDeviceLanguage() as 'en' | 'es');
   const [enableBiometric, setEnableBiometric] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [nameError, setNameError] = useState<string | undefined>(undefined);
+  const [ageError, setAgeError] = useState<string | undefined>(undefined);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -134,6 +136,11 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
     control,
     name: 'profile.partners',
   });
+
+  const getError = (error: FieldError) => {
+    console.error('Validation error:', error);
+    return t(error.message || '')
+  }
 
   const handleNext = async () => {
     if (currentStep < onboardingSteps.length - 1) {
@@ -189,7 +196,18 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
       const profileValidationResult = await ValidationService.validateUserProfile(formData.profile); // Aquí asumo que userSettingsSchema puede validar el perfil. Si no, necesitarías un schema específico para el perfil.
       if (!profileValidationResult.isValid) {
-        console.error('Profile validation errors:', profileValidationResult.errors);
+        // Mostrar errores de validación de configuración
+        if (profileValidationResult.errors) {
+          const name = profileValidationResult.errors['name'];
+          // Asegúrate de que son strings, como lo confirma tu log
+          if (typeof name === 'string') {
+            setNameError(name);
+          }
+          const age = profileValidationResult.errors['age'];
+          if (typeof age === 'string') {
+            setAgeError(age);
+          }
+        }
         Alert.alert(
           t('onboarding.error.title') || 'Error de Validación',
           `Errores en el perfil: ${JSON.stringify(profileValidationResult.errors)}`, // Mostrar errores de validación
@@ -202,17 +220,6 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
       const userSettingsValidationResult = await ValidationService.validateUserSettings(formData.settings);
       if (!userSettingsValidationResult.isValid) {
-        // Mostrar errores de validación de configuración
-        if (userSettingsValidationResult.errors) {
-          console.error('User settings validation errors:', userSettingsValidationResult.errors);
-          const { name, age } = userSettingsValidationResult.errors;
-          if (name) {
-            setError('profile.name', { type: 'manual', message: name as string });
-          }
-          if (age) {
-            setError('profile.age', { type: 'manual', message: age as string });
-          }
-        }
         Alert.alert(
           t('onboarding.error.title') || 'Error de Validación',
           `Errores en la configuración: ${JSON.stringify(userSettingsValidationResult.errors)}`,
@@ -334,14 +341,14 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
                 value={value}
                 onChangeText={onChange}
               />
-              {error && (<Text style={styles.formSubtitle}>
-                {t(error.message || '')}
-              </Text>
-              )}
+
             </>
           )}
         />
-
+        {nameError && (<Text style={styles.formError}>
+          {t(nameError, { min: minNameLength, max: maxNameLength })}
+        </Text>
+        )}
         <Controller
           control={control}
           name="profile.age"
@@ -351,16 +358,17 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
                 style={styles.textInput}
                 placeholder={t('onboarding.profile.agePlaceholder')}
                 keyboardType="numeric"
-                value={value?.toString() || undefined}
+                value={ value ? value.toString() : ''}
                 onChangeText={(text) => onChange(parseInt(text))}
               />
-              {error && (<Text style={styles.formSubtitle}>
-                {t(error.message || '')}
-              </Text>
-              )}
             </>
           )}
         />
+
+        {ageError && (<Text style={styles.formError}>
+          {t(ageError, { min: minAge, max: maxAge })}
+        </Text>
+        )}
 
         {/* Lista de parejas */}
         {fields.map((field, index) => (
@@ -858,4 +866,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  formError: {
+    color: '#dc2626', // Rojo para errores
+    fontSize: 14,
+    marginTop: 5,
+    textAlign: 'center',
+    width: '90%',
+  }
 });

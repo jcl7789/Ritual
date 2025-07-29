@@ -1,5 +1,17 @@
 import * as yup from 'yup';
 
+const minAge = 12;
+const maxAge = 90;
+const minNameLength = 2;
+const maxNameLength = 50;
+const maxPartnerNameLength = 50;
+const maxDuration = 1440; // 24 hours in minutes
+const minSatisfaction = 1;
+const maxSatisfaction = 5;
+const maxNotesLength = 500;
+
+export { minAge, maxAge, minNameLength, maxNameLength, maxPartnerNameLength, maxDuration, minSatisfaction, maxSatisfaction, maxNotesLength };
+
 // Schema para partner
 export const partnerSchema = yup.object().shape({
   id: yup.string().required('partner.errors.id.required'),
@@ -10,14 +22,14 @@ export const partnerSchema = yup.object().shape({
 export const userProfileSchema = yup.object().shape({
   name: yup.string()
     .required('userProfile.errors.name.required')
-    .min(2, 'userProfile.errors.name.min')
-    .max(50, 'userProfile.errors.name.max'),
+    .min(minNameLength, 'userProfile.errors.name.min')
+    .max(maxNameLength, 'userProfile.errors.name.max'),
   age: yup.number()
     .required('userProfile.errors.age.required')
     .positive('userProfile.errors.age.positive')
     .integer('userProfile.errors.age.integer')
-    .min(12, 'userProfile.errors.age.min')
-    .max(90, 'userProfile.errors.age.max'),
+    .min(minAge, 'userProfile.errors.age.min')
+    .max(maxAge, 'userProfile.errors.age.max'),
   partners: yup.array()
     .of(partnerSchema)
     .optional(),
@@ -38,24 +50,24 @@ export const createEntrySchema = yup.object({
 
   partner: yup.string()
     .trim()
-    .max(50, 'Partner name must be 50 characters or less')
+    .max(maxPartnerNameLength, 'Partner name must be 50 characters or less')
     .optional(),
 
   duration: yup.number()
     .positive('Duration must be positive')
-    .max(1440, 'Duration cannot exceed 24 hours')
+    .max(maxDuration, 'Duration cannot exceed 24 hours')
     .integer('Duration must be a whole number')
     .optional(),
 
   satisfaction: yup.number()
-    .min(1, 'Satisfaction must be between 1 and 5')
-    .max(5, 'Satisfaction must be between 1 and 5')
+    .min(minSatisfaction, 'Satisfaction must be between 1 and 5')
+    .max(maxSatisfaction, 'Satisfaction must be between 1 and 5')
     .integer('Satisfaction must be a whole number')
     .optional(),
 
   notes: yup.string()
     .trim()
-    .max(500, 'Notes must be 500 characters or less')
+    .max(maxNotesLength, 'Notes must be 500 characters or less')
     .optional(),
 
   date: yup.date()
