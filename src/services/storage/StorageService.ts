@@ -109,7 +109,7 @@ class StorageServiceClass {
 
       const decryptedData = this.decrypt(encryptedData);
       const data: StoredData = JSON.parse(decryptedData);
-      
+
       // Convertir strings de fecha a objetos Date
       data.entries = data.entries.map(entry => ({
         ...entry,
@@ -161,6 +161,18 @@ class StorageServiceClass {
     } catch (error) {
       console.error('Error saving entry:', error);
       throw new Error('Failed to save entry');
+    }
+  }
+
+  async saveBackupData(data: StoredData): Promise<void> {
+    try {
+      if (!StorageServiceClass.validateDataStructure(data)) {
+        throw new Error('Invalid data structure');
+      }
+      await this.saveData(data);
+    } catch (error) {
+      console.error('Error saving backup data:', error);
+      throw new Error('Failed to save backup data');
     }
   }
 
@@ -223,7 +235,7 @@ class StorageServiceClass {
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const thisMonthEntries = entries.filter(entry => 
+      const thisMonthEntries = entries.filter(entry =>
         new Date(entry.date) >= startOfMonth
       );
 
@@ -245,11 +257,11 @@ class StorageServiceClass {
         return acc;
       }, {} as Record<string, number>);
 
-      const mostCommonActivityId = Object.keys(activityCounts).reduce((a, b) => 
+      const mostCommonActivityId = Object.keys(activityCounts).reduce((a, b) =>
         activityCounts[a] > activityCounts[b] ? a : b, Object.keys(activityCounts)[0]
       );
 
-      const mostCommonActivity = entries.find(entry => 
+      const mostCommonActivity = entries.find(entry =>
         entry.activityType.id === mostCommonActivityId
       )?.activityType;
 
@@ -447,4 +459,4 @@ class StorageServiceClass {
   }
 }
 
-export const StorageService = new StorageServiceClass(); 
+export const StorageService = new StorageServiceClass();

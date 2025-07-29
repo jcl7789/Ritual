@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ValidationService } from '../../services/validation/ValidationService';
-import { BackupService, BackupConfig } from '../../services/storage/BackupService';
 
 export interface NotificationSettings {
   enabled: boolean;
@@ -26,19 +25,11 @@ export interface ThemeSettings {
   accentColor: string;
 }
 
-export interface DataSettings {
-  autoBackup: boolean;
-  backupConfig: BackupConfig;
-  exportFormat: 'json' | 'csv';
-  dataRetentionDays?: number;
-}
-
 export interface AppSettings {
   language: 'en' | 'es';
   theme: ThemeSettings;
   notifications: NotificationSettings;
   privacy: PrivacySettings;
-  data: DataSettings;
   firstLaunch: boolean;
   onboardingCompleted: boolean;
   analyticsEnabled: boolean;
@@ -72,17 +63,6 @@ const defaultSettings: AppSettings = {
     hideInRecents: true,
     privateMode: false
   },
-  data: {
-    autoBackup: false,
-    backupConfig: {
-      autoBackup: false,
-      frequency: 'weekly',
-      maxBackups: 5,
-      cloudSync: false,
-      compressionEnabled: true
-    },
-    exportFormat: 'json'
-  },
   firstLaunch: true,
   onboardingCompleted: false,
   analyticsEnabled: false
@@ -103,18 +83,18 @@ export const initializeSettings = createAsyncThunk(
       const settingsString = await AsyncStorage.getItem('app_settings');
       if (settingsString) {
         const savedSettings = JSON.parse(settingsString);
-        
+
         // Validar configuraciones cargadas
         const validation = await ValidationService.validateUserSettings(savedSettings);
         if (validation.isValid && validation.data) {
           return { ...defaultSettings, ...validation.data };
         }
       }
-      
+
       // Si no hay configuraciones guardadas o son inválidas, usar por defecto
       await AsyncStorage.setItem('app_settings', JSON.stringify(defaultSettings));
       return defaultSettings;
-      
+
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to initialize settings');
     }
@@ -126,11 +106,11 @@ export const updateLanguage = createAsyncThunk(
   async (language: 'en' | 'es', { getState, rejectWithValue }) => {
     try {
       const state = getState() as { settings: SettingsState };
-      const updatedSettings = { 
-        ...state.settings.settings, 
-        language 
+      const updatedSettings = {
+        ...state.settings.settings,
+        language
       };
-      
+
       await AsyncStorage.setItem('app_settings', JSON.stringify(updatedSettings));
       return language;
     } catch (error) {
@@ -144,15 +124,15 @@ export const updateTheme = createAsyncThunk(
   async (theme: Partial<ThemeSettings>, { getState, rejectWithValue }) => {
     try {
       const state = getState() as { settings: SettingsState };
-      const updatedTheme = { 
-        ...state.settings.settings.theme, 
-        ...theme 
+      const updatedTheme = {
+        ...state.settings.settings.theme,
+        ...theme
       };
-      const updatedSettings = { 
-        ...state.settings.settings, 
-        theme: updatedTheme 
+      const updatedSettings = {
+        ...state.settings.settings,
+        theme: updatedTheme
       };
-      
+
       await AsyncStorage.setItem('app_settings', JSON.stringify(updatedSettings));
       return updatedTheme;
     } catch (error) {
@@ -166,15 +146,15 @@ export const updateNotifications = createAsyncThunk(
   async (notifications: Partial<NotificationSettings>, { getState, rejectWithValue }) => {
     try {
       const state = getState() as { settings: SettingsState };
-      const updatedNotifications = { 
-        ...state.settings.settings.notifications, 
-        ...notifications 
+      const updatedNotifications = {
+        ...state.settings.settings.notifications,
+        ...notifications
       };
-      const updatedSettings = { 
-        ...state.settings.settings, 
-        notifications: updatedNotifications 
+      const updatedSettings = {
+        ...state.settings.settings,
+        notifications: updatedNotifications
       };
-      
+
       await AsyncStorage.setItem('app_settings', JSON.stringify(updatedSettings));
       return updatedNotifications;
     } catch (error) {
@@ -188,46 +168,19 @@ export const updatePrivacy = createAsyncThunk(
   async (privacy: Partial<PrivacySettings>, { getState, rejectWithValue }) => {
     try {
       const state = getState() as { settings: SettingsState };
-      const updatedPrivacy = { 
-        ...state.settings.settings.privacy, 
-        ...privacy 
+      const updatedPrivacy = {
+        ...state.settings.settings.privacy,
+        ...privacy
       };
-      const updatedSettings = { 
-        ...state.settings.settings, 
-        privacy: updatedPrivacy 
+      const updatedSettings = {
+        ...state.settings.settings,
+        privacy: updatedPrivacy
       };
-      
+
       await AsyncStorage.setItem('app_settings', JSON.stringify(updatedSettings));
       return updatedPrivacy;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to update privacy settings');
-    }
-  }
-);
-
-export const updateDataSettings = createAsyncThunk(
-  'settings/updateDataSettings',
-  async (dataSettings: Partial<DataSettings>, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as { settings: SettingsState };
-      const updatedDataSettings = { 
-        ...state.settings.settings.data, 
-        ...dataSettings 
-      };
-      const updatedSettings = { 
-        ...state.settings.settings, 
-        data: updatedDataSettings 
-      };
-      
-      // Si se habilita el auto backup, configurarlo
-      if (dataSettings.autoBackup !== undefined || dataSettings.backupConfig) {
-        await BackupService.configureAutoBackup(updatedDataSettings.backupConfig);
-      }
-      
-      await AsyncStorage.setItem('app_settings', JSON.stringify(updatedSettings));
-      return updatedDataSettings;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update data settings');
     }
   }
 );
@@ -237,13 +190,13 @@ export const completeOnboarding = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState() as { settings: SettingsState };
-      const updatedSettings = { 
-        ...state.settings.settings, 
+      const updatedSettings = {
+        ...state.settings.settings,
         firstLaunch: false,
         initialized: true,
-        onboardingCompleted: true 
+        onboardingCompleted: true
       };
-      
+
       await AsyncStorage.setItem('app_settings', JSON.stringify(updatedSettings));
       return true;
     } catch (error) {
@@ -274,7 +227,7 @@ export const exportSettings = createAsyncThunk(
         exportedAt: new Date().toISOString(),
         version: '1.0.0'
       };
-      
+
       return JSON.stringify(settingsData, null, 2);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to export settings');
@@ -287,20 +240,20 @@ export const importSettings = createAsyncThunk(
   async (settingsData: string, { rejectWithValue }) => {
     try {
       const parsedData = JSON.parse(settingsData);
-      
+
       // Validar estructura de configuraciones importadas
       if (!parsedData.settings) {
         throw new Error('Invalid settings format');
       }
-      
+
       const validation = await ValidationService.validateUserSettings(parsedData.settings);
       if (!validation.isValid) {
         throw new Error('Invalid settings data');
       }
-      
+
       const mergedSettings = { ...defaultSettings, ...validation.data };
       await AsyncStorage.setItem('app_settings', JSON.stringify(mergedSettings));
-      
+
       return mergedSettings;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to import settings');
@@ -316,27 +269,27 @@ const settingsSlice = createSlice({
     setLanguage: (state, action: PayloadAction<'en' | 'es'>) => {
       state.settings.language = action.payload;
     },
-    
+
     setThemeMode: (state, action: PayloadAction<'light' | 'dark' | 'auto'>) => {
       state.settings.theme.mode = action.payload;
     },
-    
+
     togglePrivateMode: (state) => {
       state.settings.privacy.privateMode = !state.settings.privacy.privateMode;
     },
-    
+
     setAutoLock: (state, action: PayloadAction<boolean>) => {
       state.settings.privacy.autoLock = action.payload;
     },
-    
+
     setAnalytics: (state, action: PayloadAction<boolean>) => {
       state.settings.analyticsEnabled = action.payload;
     },
-    
+
     clearError: (state) => {
       state.error = null;
     },
-    
+
     // Para desarrollo/testing
     resetToDefaults: (state) => {
       state.settings = defaultSettings;
@@ -416,20 +369,6 @@ const settingsSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // Update Data Settings
-      .addCase(updateDataSettings.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateDataSettings.fulfilled, (state, action) => {
-        state.loading = false;
-        state.settings.data = action.payload;
-      })
-      .addCase(updateDataSettings.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
       // Complete Onboarding
       .addCase(completeOnboarding.pending, (state) => {
         state.loading = true;
@@ -494,7 +433,6 @@ export const selectTheme = (state: { settings: SettingsState }) => state.setting
 export const selectLanguage = (state: { settings: SettingsState }) => state.settings.settings.language;
 export const selectNotifications = (state: { settings: SettingsState }) => state.settings.settings.notifications;
 export const selectPrivacy = (state: { settings: SettingsState }) => state.settings.settings.privacy;
-export const selectDataSettings = (state: { settings: SettingsState }) => state.settings.settings.data;
 export const selectIsFirstLaunch = (state: { settings: SettingsState }) => state.settings.settings.firstLaunch;
 export const selectIsOnboardingCompleted = (state: { settings: SettingsState }) => state.settings.settings.onboardingCompleted;
 export const selectSettingsLoading = (state: { settings: SettingsState }) => state.settings.loading;
