@@ -1,12 +1,12 @@
 // src/services/storage/BackupService.ts
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { EncryptionService } from './EncryptionService';
-import { StorageService } from './StorageService';
-import { ValidationService } from '../validation/ValidationService';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
-import * as DocumentPicker from 'expo-document-picker';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { EncryptionService } from "./EncryptionService";
+import { StorageService } from "./StorageService";
+import { ValidationService } from "../validation/ValidationService";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import * as DocumentPicker from "expo-document-picker";
 
 export interface BackupMetadata {
   id: string;
@@ -20,7 +20,7 @@ export interface BackupMetadata {
 
 export interface BackupConfig {
   autoBackup: boolean;
-  frequency: 'daily' | 'weekly' | 'monthly';
+  frequency: "daily" | "weekly" | "monthly";
   maxBackups: number;
   cloudSync: boolean;
   compressionEnabled: boolean;
@@ -35,8 +35,8 @@ export interface BackupResult {
 
 export class BackupService {
   private static readonly BACKUP_DIR = `${FileSystem.documentDirectory}backups/`;
-  private static readonly BACKUP_METADATA_KEY = 'backup_metadata';
-  private static readonly AUTO_BACKUP_KEY = 'auto_backup_config';
+  private static readonly BACKUP_METADATA_KEY = "backup_metadata";
+  private static readonly AUTO_BACKUP_KEY = "auto_backup_config";
 
   /**
    * Inicializa el directorio de backups
@@ -45,11 +45,13 @@ export class BackupService {
     try {
       const dirInfo = await FileSystem.getInfoAsync(this.BACKUP_DIR);
       if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(this.BACKUP_DIR, { intermediates: true });
+        await FileSystem.makeDirectoryAsync(this.BACKUP_DIR, {
+          intermediates: true,
+        });
       }
     } catch (error) {
-      console.error('Error initializing backup system:', error);
-      throw new Error('Failed to initialize backup system');
+      console.error("Error initializing backup system:", error);
+      throw new Error("Failed to initialize backup system");
     }
   }
 
@@ -60,18 +62,18 @@ export class BackupService {
     includeSettings: boolean = true,
     compress: boolean = true
   ): Promise<BackupResult> {
-    console.log('Creating full backup...', includeSettings, compress);
+    console.log("Creating full backup...", includeSettings, compress);
     try {
       await this.initializeBackupSystem();
-      
+
       const data = await StorageService.loadData();
-      
+
       // Validar datos antes del backup
       const validation = await ValidationService.validateBackupData(data);
       if (!validation.isValid) {
         return {
           success: false,
-          error: `Invalid backup data: ${JSON.stringify(validation.errors)}`
+          error: `Invalid backup data: ${JSON.stringify(validation.errors)}`,
         };
       }
 
@@ -81,34 +83,40 @@ export class BackupService {
         backupMetadata: {
           id: this.generateBackupId(),
           createdAt: new Date(),
-          version: '1.0.0',
-          platform: 'mobile',
+          version: "1.0.0",
+          platform: "mobile",
           entriesCount: data.entries.length,
-          encrypted: true
-        }
+          encrypted: true,
+        },
       };
 
       // Cifrar datos
       const encryptedData = EncryptionService.encrypt(backupData);
-      
+
       // Comprimir si está habilitado
-      const finalData = compress ? await this.compressData(encryptedData) : encryptedData;
-      
+      const finalData = compress
+        ? await this.compressData(encryptedData)
+        : encryptedData;
+
       // Generar nombre del archivo
-      const timestamp = new Date().toISOString().split('T')[0];
-      const filename = `ritual_backup_${timestamp}_${backupData.backupMetadata.id.substring(0, 8)}.rbk`;
+      const timestamp = new Date().toISOString().split("T")[0];
+      const filename = `ritual_backup_${timestamp}_${backupData.backupMetadata.id.substring(
+        0,
+        8
+      )}.rbk`;
       const filePath = `${this.BACKUP_DIR}${filename}`;
 
       // Guardar archivo
       await FileSystem.writeAsStringAsync(filePath, finalData, {
-        encoding: FileSystem.EncodingType.UTF8
+        encoding: FileSystem.EncodingType.UTF8,
       });
 
       // Obtener información del archivo
       const fileInfo = await FileSystem.getInfoAsync(filePath);
       const metadata: BackupMetadata = {
         ...backupData.backupMetadata,
-        fileSize: fileInfo.exists && 'size' in fileInfo ? (fileInfo.size as number) : 0
+        fileSize:
+          fileInfo.exists && "size" in fileInfo ? (fileInfo.size as number) : 0,
       };
 
       // Guardar metadata del backup
@@ -120,14 +128,13 @@ export class BackupService {
       return {
         success: true,
         filePath,
-        metadata
+        metadata,
       };
-
     } catch (error) {
-      console.error('Error creating backup:', error);
+      console.error("Error creating backup:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown backup error'
+        error: error instanceof Error ? error.message : "Unknown backup error",
       };
     }
   }
@@ -139,21 +146,23 @@ export class BackupService {
     try {
       // Leer archivo
       const fileContent = await FileSystem.readAsStringAsync(filePath, {
-        encoding: FileSystem.EncodingType.UTF8
+        encoding: FileSystem.EncodingType.UTF8,
       });
 
       // Descomprimir si es necesario
       const decompressedData = await this.decompressData(fileContent);
-      
+
       // Descifrar datos
       const decryptedData = EncryptionService.decrypt(decompressedData);
-      
+
       // Validar estructura de datos
-      const validation = await ValidationService.validateImportData(decryptedData);
+      const validation = await ValidationService.validateImportData(
+        decryptedData
+      );
       if (!validation.isValid) {
         return {
           success: false,
-          error: `Invalid backup format: ${JSON.stringify(validation.errors)}`
+          error: `Invalid backup format: ${JSON.stringify(validation.errors)}`,
         };
       }
 
@@ -161,18 +170,17 @@ export class BackupService {
       await this.createFullBackup(true, true);
 
       // Restaurar datos
-      await StorageService.saveData(decryptedData);
+      await StorageService.saveBackupData(decryptedData);
 
       return {
         success: true,
-        metadata: decryptedData.backupMetadata
+        metadata: decryptedData.backupMetadata,
       };
-
     } catch (error) {
-      console.error('Error restoring backup:', error);
+      console.error("Error restoring backup:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown restore error'
+        error: error instanceof Error ? error.message : "Unknown restore error",
       };
     }
   }
@@ -183,7 +191,7 @@ export class BackupService {
   static async exportBackup(): Promise<BackupResult> {
     try {
       const backupResult = await this.createFullBackup(true, true);
-      
+
       if (!backupResult.success || !backupResult.filePath) {
         return backupResult;
       }
@@ -191,18 +199,17 @@ export class BackupService {
       // Compartir archivo
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(backupResult.filePath, {
-          mimeType: 'application/octet-stream',
-          dialogTitle: 'Export Ritual Backup'
+          mimeType: "application/octet-stream",
+          dialogTitle: "Export Ritual Backup",
         });
       }
 
       return backupResult;
-
     } catch (error) {
-      console.error('Error exporting backup:', error);
+      console.error("Error exporting backup:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Export failed'
+        error: error instanceof Error ? error.message : "Export failed",
       };
     }
   }
@@ -214,34 +221,33 @@ export class BackupService {
     try {
       // Seleccionar archivo
       const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/octet-stream', '*/*'],
-        copyToCacheDirectory: true
+        type: ["application/octet-stream", "*/*"],
+        copyToCacheDirectory: true,
       });
 
       if (result.canceled || !result.assets[0]) {
         return {
           success: false,
-          error: 'No file selected'
+          error: "No file selected",
         };
       }
 
       const file = result.assets[0];
-      
+
       // Validar extensión
-      if (!file.name.endsWith('.rbk')) {
+      if (!file.name.endsWith(".rbk")) {
         return {
           success: false,
-          error: 'Invalid backup file format. Please select a .rbk file.'
+          error: "Invalid backup file format. Please select a .rbk file.",
         };
       }
 
       return await this.restoreBackup(file.uri);
-
     } catch (error) {
-      console.error('Error importing backup:', error);
+      console.error("Error importing backup:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Import failed'
+        error: error instanceof Error ? error.message : "Import failed",
       };
     }
   }
@@ -252,15 +258,15 @@ export class BackupService {
   static async configureAutoBackup(config: BackupConfig): Promise<void> {
     try {
       await AsyncStorage.setItem(this.AUTO_BACKUP_KEY, JSON.stringify(config));
-      
+
       if (config.autoBackup) {
         await this.scheduleNextBackup(config.frequency);
       } else {
         await this.cancelScheduledBackup();
       }
     } catch (error) {
-      console.error('Error configuring auto backup:', error);
-      throw new Error('Failed to configure auto backup');
+      console.error("Error configuring auto backup:", error);
+      throw new Error("Failed to configure auto backup");
     }
   }
 
@@ -273,23 +279,23 @@ export class BackupService {
       if (configString) {
         return JSON.parse(configString);
       }
-      
+
       // Configuración por defecto
       return {
         autoBackup: false,
-        frequency: 'weekly',
+        frequency: "weekly",
         maxBackups: 5,
         cloudSync: false,
-        compressionEnabled: true
+        compressionEnabled: true,
       };
     } catch (error) {
-      console.error('Error getting auto backup config:', error);
+      console.error("Error getting auto backup config:", error);
       return {
         autoBackup: false,
-        frequency: 'weekly',
+        frequency: "weekly",
         maxBackups: 5,
         cloudSync: false,
-        compressionEnabled: true
+        compressionEnabled: true,
       };
     }
   }
@@ -300,23 +306,26 @@ export class BackupService {
   static async listBackups(): Promise<BackupMetadata[]> {
     try {
       await this.initializeBackupSystem();
-      
+
       const files = await FileSystem.readDirectoryAsync(this.BACKUP_DIR);
-      const backupFiles = files.filter(file => file.endsWith('.rbk'));
-      
+      const backupFiles = files.filter((file) => file.endsWith(".rbk"));
+
       const metadataList: BackupMetadata[] = [];
-      
+
       for (const file of backupFiles) {
         try {
           const filePath = `${this.BACKUP_DIR}${file}`;
           const fileInfo = await FileSystem.getInfoAsync(filePath);
-          
+
           // Intentar obtener metadata del archivo
           const metadata = await this.extractBackupMetadata(filePath);
           if (metadata) {
             metadataList.push({
               ...metadata,
-              fileSize: fileInfo.exists && 'size' in fileInfo ? (fileInfo.size as number) : 0
+              fileSize:
+                fileInfo.exists && "size" in fileInfo
+                  ? (fileInfo.size as number)
+                  : 0,
             });
           }
         } catch (error) {
@@ -324,12 +333,12 @@ export class BackupService {
         }
       }
 
-      return metadataList.sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      return metadataList.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-
     } catch (error) {
-      console.error('Error listing backups:', error);
+      console.error("Error listing backups:", error);
       return [];
     }
   }
@@ -340,14 +349,16 @@ export class BackupService {
   static async deleteBackup(backupId: string): Promise<boolean> {
     try {
       const backups = await this.listBackups();
-      const backup = backups.find(b => b.id === backupId);
-      
+      const backup = backups.find((b) => b.id === backupId);
+
       if (!backup) {
         return false;
       }
 
-      const filePath = `${this.BACKUP_DIR}ritual_backup_${backup.createdAt.toISOString().split('T')[0]}_${backup.id.substring(0, 8)}.rbk`;
-      
+      const filePath = `${this.BACKUP_DIR}ritual_backup_${
+        backup.createdAt.toISOString().split("T")[0]
+      }_${backup.id.substring(0, 8)}.rbk`;
+
       const fileInfo = await FileSystem.getInfoAsync(filePath);
       if (fileInfo.exists) {
         await FileSystem.deleteAsync(filePath);
@@ -356,7 +367,7 @@ export class BackupService {
 
       return false;
     } catch (error) {
-      console.error('Error deleting backup:', error);
+      console.error("Error deleting backup:", error);
       return false;
     }
   }
@@ -370,8 +381,8 @@ export class BackupService {
     try {
       return btoa(data);
     } catch (error) {
-      console.warn('Compression failed, using original data');
-      console.error('Compression error:', error);
+      console.warn("Compression failed, using original data");
+      console.error("Compression error:", error);
       return data;
     }
   }
@@ -384,7 +395,7 @@ export class BackupService {
       return atob(data);
     } catch (error) {
       // Si falla la descompresión, asumir que no está comprimido
-        console.warn('Decompression failed, using original data', error);
+      console.warn("Decompression failed, using original data", error);
       return data;
     }
   }
@@ -400,39 +411,43 @@ export class BackupService {
    * Guarda metadata del backup
    */
   private static async saveBackupMetadata(
-    metadata: BackupMetadata, 
+    metadata: BackupMetadata,
     filePath: string
   ): Promise<void> {
     try {
-      const existingMetadata = await AsyncStorage.getItem(this.BACKUP_METADATA_KEY);
+      const existingMetadata = await AsyncStorage.getItem(
+        this.BACKUP_METADATA_KEY
+      );
       const metadataList = existingMetadata ? JSON.parse(existingMetadata) : [];
-      
+
       metadataList.push({ ...metadata, filePath });
-      
+
       await AsyncStorage.setItem(
-        this.BACKUP_METADATA_KEY, 
+        this.BACKUP_METADATA_KEY,
         JSON.stringify(metadataList)
       );
     } catch (error) {
-      console.error('Error saving backup metadata:', error);
+      console.error("Error saving backup metadata:", error);
     }
   }
 
   /**
    * Extrae metadata de un archivo de backup
    */
-  private static async extractBackupMetadata(filePath: string): Promise<BackupMetadata | null> {
+  private static async extractBackupMetadata(
+    filePath: string
+  ): Promise<BackupMetadata | null> {
     try {
       const fileContent = await FileSystem.readAsStringAsync(filePath, {
-        encoding: FileSystem.EncodingType.UTF8
+        encoding: FileSystem.EncodingType.UTF8,
       });
-      
+
       const decompressedData = await this.decompressData(fileContent);
       const decryptedData = EncryptionService.decrypt(decompressedData);
-      
+
       return decryptedData.backupMetadata || null;
     } catch (error) {
-      console.error('Error extracting backup metadata:', error);
+      console.error("Error extracting backup metadata:", error);
       return null;
     }
   }
@@ -444,23 +459,25 @@ export class BackupService {
     try {
       const config = await this.getAutoBackupConfig();
       const backups = await this.listBackups();
-      
+
       if (backups.length > config.maxBackups) {
         const backupsToDelete = backups.slice(config.maxBackups);
-        
+
         for (const backup of backupsToDelete) {
           await this.deleteBackup(backup.id);
         }
       }
     } catch (error) {
-      console.error('Error cleaning up backups:', error);
+      console.error("Error cleaning up backups:", error);
     }
   }
 
   /**
    * Programa el siguiente backup automático
    */
-  private static async scheduleNextBackup(frequency: 'daily' | 'weekly' | 'monthly'): Promise<void> {
+  private static async scheduleNextBackup(
+    frequency: "daily" | "weekly" | "monthly"
+  ): Promise<void> {
     // Esta función dependería de una implementación de scheduling
     // Por ejemplo, usando expo-task-manager o expo-background-task
     console.log(`Scheduling next backup with frequency: ${frequency}`);
@@ -470,7 +487,7 @@ export class BackupService {
    * Cancela backup automático programado
    */
   private static async cancelScheduledBackup(): Promise<void> {
-    console.log('Cancelling scheduled backup');
+    console.log("Cancelling scheduled backup");
     // Implementar cancelación de tareas programadas
   }
 }
