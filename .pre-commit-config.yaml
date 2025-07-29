@@ -8,6 +8,10 @@ repos:
     hooks:
       - id: check-yaml
       - id: check-json
+      - id: end-of-file-fixer # Asegura una nueva línea al final de los archivos
+      - id: trailing-whitespace # Elimina espacios en blanco al final de las líneas
+      - id: check-added-large-files # Evita añadir accidentalmente archivos muy grandes
+
 
   # # Hook para Prettier (formateador de código)
   # - repo: https://github.com/prettier/prettier
