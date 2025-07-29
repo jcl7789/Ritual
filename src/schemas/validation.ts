@@ -75,15 +75,18 @@ export const entryFiltersSchema = yup.object({
     .optional()
 });
 
-// Schema para configuraciones de usuario
-export const userSettingsSchema = yup.object({
+export const userSettingsSchema = yup.object().shape({
   language: yup.string()
     .oneOf(['en', 'es'], 'Invalid language')
     .required('Language is required'),
 
-  theme: yup.string()
-    .oneOf(['light', 'dark', 'auto'], 'Invalid theme')
-    .required('Theme is required'),
+  theme: yup.object({
+    mode: yup.string()
+      .oneOf(['light', 'dark', 'auto'], 'Invalid theme mode')
+      .required('Theme mode is required'),
+    primaryColor: yup.string().required('Primary color is required'),
+    accentColor: yup.string().required('Accent color is required'),
+  }).required('Theme settings are required'),
 
   notifications: yup.object({
     enabled: yup.boolean().required(),
@@ -93,25 +96,26 @@ export const userSettingsSchema = yup.object({
     frequency: yup.string()
       .oneOf(['daily', 'weekly', 'never'], 'Invalid frequency')
       .required()
-  }).required(),
+  }).required('Notification settings are required'),
 
   privacy: yup.object({
     requireAuth: yup.boolean().required(),
+    authMethod: yup.string()
+      .oneOf(['biometric', 'pin', 'pattern', 'none'], 'Invalid auth method') // Asegúrate de que este enum coincida
+      .required(),
     autoLock: yup.boolean().required(),
     autoLockTimeout: yup.number()
       .min(30, 'Auto-lock timeout must be at least 30 seconds')
       .max(3600, 'Auto-lock timeout cannot exceed 1 hour')
       .required(),
-    hideInRecents: yup.boolean().required()
-  }).required(),
+    hideInRecents: yup.boolean().required(),
+    privateMode: yup.boolean().required(), // Agrega este si existe en AppSettings
+  }).required('Privacy settings are required'),
 
-  backup: yup.object({
-    autoBackup: yup.boolean().required(),
-    backupFrequency: yup.string()
-      .oneOf(['daily', 'weekly', 'monthly'], 'Invalid backup frequency')
-      .required(),
-    cloudSync: yup.boolean().required()
-  }).required()
+  // Agrega estos campos si AppSettings los tiene y quieres validarlos
+  firstLaunch: yup.boolean().required('First launch status is required'),
+  onboardingCompleted: yup.boolean().required('Onboarding completed status is required'),
+  analyticsEnabled: yup.boolean().required('Analytics enabled status is required'),
 });
 
 // Schema para datos de importación
