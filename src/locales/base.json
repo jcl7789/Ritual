@@ -1,0 +1,199 @@
+{
+  "navigation": {
+    "home": "",
+    "history": ""
+  },
+  "addEntry": {
+    "title": "",
+    "error": {
+      "activityRequired": ""
+    },
+    "success": {
+      "title": "",
+      "message": ""
+    },
+    "activityType": "",
+    "partner": "",
+    "partnerPlaceholder": "",
+    "duration": "",
+    "durationPlaceholder": "",
+    "satisfaction": "",
+    "notes": "",
+    "notesPlaceholder": "",
+    "save": ""
+  },
+  "settings": {
+    "title": "",
+    "language": {
+      "changedTitle": "",
+      "changedMessage": ""
+    },
+    "backup": {
+      "success": {
+        "title": "",
+        "message": ""
+      },
+      "create": ""
+    },
+    "export": {
+      "shareMessage": "",
+      "shareTitle": "",
+      "success": {
+        "title": "",
+        "message": ""
+      },
+      "error": {
+        "message": ""
+      },
+      "title": ""
+    },
+    "import": {
+      "confirmTitle": "",
+      "confirmMessage": "",
+      "success": {
+        "title": "",
+        "message": ""
+      },
+      "error": {
+        "message": ""
+      },
+      "title": ""
+    },
+    "reset": {
+      "confirmTitle": "",
+      "confirmMessage": "",
+      "success": {
+        "title": "",
+        "message": ""
+      },
+      "error": {
+        "message": ""
+      },
+      "resetAll": ""
+    },
+    "general": {
+      "title": ""
+    },
+    "notifications": {
+      "label": ""
+    },
+    "privacySecurity": {
+      "title": ""
+    },
+    "privacy": {
+      "biometricAuth": ""
+    },
+    "dataManagement": {
+      "title": ""
+    },
+    "dangerZone": {
+      "title": ""
+    },
+    "about": {
+      "title": "",
+      "developer": "",
+      "privacyPolicy": "",
+      "termsOfService": ""
+    }
+  },
+  "common": {
+    "error": "",
+    "ok": "",
+    "retry": "",
+    "cancel": "",
+    "continue": "",
+    "confirm": ""
+  },
+  "onboarding": {
+    "error": {
+      "title": "",
+      "profileIncomplete": "",
+      "message": ""
+    },
+    "selectLanguage": "",
+    "profile": {
+      "namePlaceholder": "",
+      "agePlaceholder": "",
+      "partnerNamePlaceholder": "",
+      "addPartner": ""
+    },
+    "enableBiometric": "",
+    "biometricDescription": "",
+    "setup": "",
+    "previous": "",
+    "saving": "",
+    "getStarted": "",
+    "next": ""
+  },
+  "history": {
+    "time": {
+      "today": "",
+      "yesterday": ""
+    },
+    "delete": {
+      "title": "",
+      "message": "",
+      "cancel": "",
+      "confirm": ""
+    },
+    "empty": {
+      "title": "",
+      "subtitle": "",
+      "subtitlePeriod": "",
+      "subtitleMonth": ""
+    },
+    "filters": {
+      "all": "",
+      "week": "",
+      "month": ""
+    }
+  },
+  "home": {
+    "greetings": {
+      "morning": "",
+      "afternoon": "",
+      "evening": ""
+    },
+    "title": "",
+    "subtitle": "",
+    "stats": {
+      "total": "",
+      "thisMonth": "",
+      "average": ""
+    },
+    "addEntry": "",
+    "recentEntries": "",
+    "empty": {
+      "title": "",
+      "subtitle": ""
+    }
+  },
+  "statistics": {
+    "export": {
+      "title": "",
+      "message": "",
+      "share": ""
+    },
+    "overview": {
+      "title": "",
+      "totalEntries": "",
+      "avgSatisfaction": "",
+      "currentStreak": "",
+      "longestStreak": ""
+    },
+    "trends": {
+      "title": ""
+    },
+    "activities": {
+      "title": ""
+    },
+    "timeline": {
+      "title": ""
+    },
+    "partners": {
+      "title": ""
+    },
+    "loading": "",
+    "title": ""
+  }
+}

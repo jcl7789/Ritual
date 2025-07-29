@@ -1,0 +1,239 @@
+{
+  "app": {
+    "name": "Ritual",
+    "subtitle": "Tu diario personal",
+    "loading": {
+      "title": "Cargando...",
+      "message": "Por favor espera mientras se cargan tus datos",
+      "error": {
+        "title": "Error al cargar",
+        "message": "No se pudieron cargar los datos. Por favor, intenta de nuevo más tarde."
+      }
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenido a Ritual",
+      "subtitle": "Tu registro privado de intimidad",
+      "description": "Registra tus momentos íntimos de forma privada y segura. Todos tus datos están cifrados y almacenados solo en tu dispositivo."
+    },
+    "profile": {
+      "title": "Crea tu perfil",
+      "subtitle": "Cuéntanos un poco sobre ti",
+      "description": "Esta información ayuda a personalizar tu experiencia y se almacena de forma segura en tu dispositivo.",
+      "name": "Tu nombre",
+      "namePlaceholder": "Ingresa tu nombre",
+      "age": "Tu edad",
+      "agePlaceholder": "Ingresa tu edad",
+      "partnerName": "Nombre de tu pareja (opcional)",
+      "partnerNamePlaceholder": "Ingresa el nombre de tu pareja",
+      "addPartner": "Agregar pareja",
+      "partnerNameHelper": "Esto se usará como valor predeterminado al registrar actividades juntos."
+    },
+    "privacy": {
+      "title": "Privacidad ante todo",
+      "subtitle": "Tus datos son solo tuyos",
+      "description": "Ritual no comparte tus datos con nadie. Todo se almacena localmente en tu dispositivo, garantizando tu privacidad."
+    },
+    "tracking": {
+      "title": "Registra tu intimidad",
+      "subtitle": "Registra tus actividades fácilmente",
+      "description": "Registra tus actividades íntimas con facilidad. Ritual te ayuda a llevar un seguimiento de tus experiencias y sentimientos."
+    },
+    "features": {
+      "title": "Funciones",
+      "subtitle": "Lo que ofrece Ritual",
+      "description": "Ritual proporciona una forma sencilla y segura de rastrear tu vida íntima, brindándote información y control sobre tus datos personales."
+    },
+    "error": {
+      "title": "Error",
+      "profileIncomplete": "Por favor, completa tu perfil antes de finalizar.",
+      "message": "Hubo un error al configurar la aplicación. Por favor, inténtalo de nuevo."
+    },
+    "selectLanguage": "Seleccionar Idioma",
+    "enableBiometric": "Habilitar Autenticación Biométrica",
+    "biometricDescription": "Usa tu huella dactilar o Face ID para acceder a la aplicación de forma rápida y segura.",
+    "setup": "Configuración Completa",
+    "previous": "Anterior",
+    "saving": "Guardando...",
+    "getStarted": "Empezar",
+    "next": "Siguiente"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "history": "Historial"
+  },
+  "addEntry": {
+    "title": "Añadir Entrada",
+    "error": {
+      "activityRequired": "El tipo de actividad es requerido."
+    },
+    "success": {
+      "title": "Entrada Guardada",
+      "message": "Tu entrada ha sido guardada exitosamente."
+    },
+    "activityType": "Tipo de Actividad",
+    "partner": "Pareja",
+    "partnerPlaceholder": "Seleccionar Pareja",
+    "duration": "Duración",
+    "durationPlaceholder": "Ingresar duración (minutos)",
+    "satisfaction": "Satisfacción",
+    "notes": "Notas",
+    "notesPlaceholder": "Añadir notas...",
+    "save": "Guardar"
+  },
+  "history": {
+    "time": {
+      "today": "Hoy",
+      "yesterday": "Ayer"
+    },
+    "delete": {
+      "title": "Eliminar Entrada",
+      "message": "¿Estás seguro de que quieres eliminar esta entrada?",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    },
+    "empty": {
+      "title": "Aún no hay Entradas",
+      "subtitle": "¡Empieza añadiendo tu primera entrada!",
+      "subtitlePeriod": "No hay entradas para este período.",
+      "subtitleMonth": "No hay entradas para este mes."
+    },
+    "filters": {
+      "all": "Todo",
+      "week": "Semana",
+      "month": "Mes"
+    }
+  },
+  "home": {
+    "greetings": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "title": "Tu Ritual",
+    "subtitle": "¿Cómo te sientes hoy?",
+    "stats": {
+      "total": "Entradas Totales",
+      "thisMonth": "Este Mes",
+      "average": "Satisfacción Promedio"
+    },
+    "addEntry": "Añadir Nueva Entrada",
+    "recentEntries": "Entradas Recientes",
+    "empty": {
+      "title": "No hay Entradas Recientes",
+      "subtitle": "Añade una entrada para verla aquí."
+    }
+  },
+  "common": {
+    "error": "Error",
+    "ok": "OK",
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "confirm": "Confirmar"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": {
+      "label": "Idioma",
+      "changedTitle": "Idioma Cambiado",
+      "changedMessage": "El idioma de la aplicación ha sido cambiado exitosamente."
+    },
+    "backup": {
+      "success": {
+        "title": "Copia de seguridad creada",
+        "message": "Tu copia de seguridad ha sido creada exitosamente"
+      },
+      "create": "Crear Copia de Seguridad"
+    },
+    "export": {
+      "title": "Exportar Datos",
+      "shareMessage": "Comparte tu archivo de datos de Ritual.",
+      "shareTitle": "Exportar Datos de Ritual",
+      "success": {
+        "title": "Exportación Exitosa",
+        "message": "Tus datos han sido exportados exitosamente."
+      },
+      "error": {
+        "message": "Hubo un error al exportar tus datos. Por favor, inténtalo de nuevo."
+      }
+    },
+    "import": {
+      "title": "Importar Datos",
+      "confirmTitle": "Confirmar Importación",
+      "confirmMessage": "La importación de datos sobrescribirá tus datos actuales. ¿Estás seguro de que quieres continuar?",
+      "success": {
+        "title": "Importación Exitosa",
+        "message": "Tus datos han sido importados exitosamente."
+      },
+      "error": {
+        "message": "Hubo un error al importar tus datos. Por favor, asegúrate de que el archivo sea válido."
+      }
+    },
+    "reset": {
+      "confirmTitle": "Confirmar Restablecimiento",
+      "confirmMessage": "Esta acción eliminará TODOS tus datos y no se puede deshacer. ¿Estás absolutamente seguro?",
+      "success": {
+        "title": "Datos Restablecidos",
+        "message": "Todos tus datos han sido restablecidos exitosamente."
+      },
+      "error": {
+        "message": "Hubo un error al restablecer los datos. Por favor, inténtalo de nuevo."
+      },
+      "resetAll": "Restablecer Todos los Datos"
+    },
+    "general": {
+      "title": "General"
+    },
+    "notifications": {
+      "label": "Notificaciones"
+    },
+    "privacySecurity": {
+      "title": "Privacidad y Seguridad"
+    },
+    "privacy": {
+      "biometricAuth": "Autenticación biométrica"
+    },
+    "dataManagement": {
+      "title": "Gestión de Datos"
+    },
+    "dangerZone": {
+      "title": "Zona Peligrosa"
+    },
+    "about": {
+      "title": "Acerca de",
+      "developer": "Desarrollador",
+      "privacyPolicy": "Política de Privacidad",
+      "termsOfService": "Términos de Servicio"
+    }
+  },
+  "statistics": {
+    "title": "Estadísticas",
+    "export": {
+      "title": "Exportar Estadísticas",
+      "message": "Exporta tus datos de estadísticas a un archivo.",
+      "share": "Compartir Estadísticas"
+    },
+    "overview": {
+      "title": "Resumen",
+      "totalEntries": "Entradas Totales",
+      "avgSatisfaction": "Satisfacción Promedio",
+      "currentStreak": "Racha Actual",
+      "longestStreak": "Racha Más Larga"
+    },
+    "trends": {
+      "title": "Tendencias"
+    },
+    "activities": {
+      "title": "Actividades"
+    },
+    "timeline": {
+      "title": "Línea de Tiempo"
+    },
+    "partners": {
+      "title": "Parejas"
+    },
+    "loading": "Cargando estadísticas..."
+  }
+}

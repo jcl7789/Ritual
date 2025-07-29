@@ -1,0 +1,54 @@
+# .pre-commit-config.yaml
+# Asegúrate de ejecutar `pre-commit install` después de modificar este archivo.
+
+repos:
+  # Hooks de formateo y limpieza generales
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0 # Mantente actualizado con las últimas revisiones estables
+    hooks:
+      - id: check-yaml
+      - id: check-json
+
+  # # Hook para Prettier (formateador de código)
+  # - repo: https://github.com/prettier/prettier
+  #   rev: "3.3.3" # Revisa la última versión estable en su repositorio
+  #   hooks:
+  #     - id: prettier
+  #       files: '\.(js|jsx|ts|tsx|json|css|scss|md|yaml|html)$' # Archivos que Prettier debería formatear
+
+  # # Hook para ESLint (linter de código)
+  # - repo: https://github.com/pre-commit/mirrors-eslint
+  #   rev: v9.32.0 # Revisa la última versión estable de ESLint
+  #   hooks:
+  #     - id: eslint
+  #       files: '\.(js|jsx|ts|tsx)$' # Solo lintear estos archivos
+  #       args: [--fix] # Opcional: intenta auto-corregir problemas que ESLint pueda arreglar
+
+  # # Hooks locales (para scripts específicos de tu proyecto)
+  # - repo: local
+  #   hooks:
+  #     # Hook para verificar claves de i18n (tu script existente)
+  #     - id: check-i18n-keys
+  #       name: Check i18n keys
+  #       entry: python scripts/check_i18n_keys.py
+  #       language: system
+  #       files: '\.(js|jsx|ts|tsx|json)$' # Asegúrate de que los cambios en estos archivos disparen el hook
+  #       pass_filenames: false
+  #       always_run: true # Siempre ejecuta para asegurar que todas las claves estén validadas
+
+  #     # Hook para verificación de tipos de TypeScript
+  #     - id: type-check
+  #       name: Run TypeScript type check
+  #       entry: npm run typecheck # Usa el script 'typecheck' definido en tu package.json
+  #       language: system
+  #       pass_filenames: false # Ejecuta el typecheck en todo el proyecto
+  #       always_run: true # Siempre ejecuta la verificación de tipos para seguridad
+
+  #     # Hook para auditoría de seguridad de dependencias
+  #     - id: npm-audit
+  #       name: Run npm audit for security vulnerabilities
+  #       entry: npm audit --audit-level=high # O --audit-level=moderate
+  #       language: system
+  #       files: 'package\.json|package-lock\.json' # Ejecuta si cambian los archivos de dependencias
+  #       pass_filenames: false
+  #       always_run: true # Siempre ejecuta la auditoría si hay cambios en dependencias o en cada commit si lo prefieres

@@ -1,0 +1,239 @@
+{
+  "app": {
+    "name": "Ritual",
+    "subtitle": "Your personal diary",
+    "loading": {
+      "title": "Loading Ritual...",
+      "message": "Please wait while your data is being loaded",
+      "error": {
+        "title": "Loading error",
+        "message": "Failed to load data. Please try again later."
+      }
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Ritual",
+      "subtitle": "Your private intimacy tracker",
+      "description": "Track your intimate moments privately and securely. All your data is encrypted and stored only on your device."
+    },
+    "profile": {
+      "title": "Create Your Profile",
+      "subtitle": "Tell us a bit about yourself",
+      "description": "This information helps personalize your experience and is stored securely on your device.",
+      "name": "Your Name",
+      "namePlaceholder": "Enter your name",
+      "age": "Your Age",
+      "agePlaceholder": "Enter your age",
+      "partnerName": "Partner's Name (Optional)",
+      "partnerNamePlaceholder": "Enter your partner's name",
+      "addPartner": "Add Partner",
+      "partnerNameHelper": "This will be used as a default when logging activities together."
+    },
+    "privacy": {
+      "title": "Privacy First",
+      "subtitle": "Your data is yours alone",
+      "description": "Ritual does not share your data with anyone. Everything is stored locally on your device, ensuring your privacy."
+    },
+    "tracking": {
+      "title": "Track Your Intimacy",
+      "subtitle": "Log your activities easily",
+      "description": "Record your intimate activities with ease. Ritual helps you keep track of your experiences and feelings."
+    },
+    "features": {
+      "title": "Features",
+      "subtitle": "What Ritual offers",
+      "description": "Ritual provides a simple and secure way to track your intimate life, giving you insights and control over your personal data."
+    },
+    "error": {
+      "title": "Error",
+      "profileIncomplete": "Please complete your profile before finishing.",
+      "message": "There was an error setting up the app. Please try again."
+    },
+    "selectLanguage": "Select Language",
+    "enableBiometric": "Enable Biometric Authentication",
+    "biometricDescription": "Use your fingerprint or face ID to quickly and securely access the app.",
+    "setup": "Setup Complete",
+    "previous": "Previous",
+    "saving": "Saving...",
+    "getStarted": "Get Started",
+    "next": "Next"
+  },
+  "navigation": {
+    "home": "Home",
+    "history": "History"
+  },
+  "addEntry": {
+    "title": "Add Entry",
+    "error": {
+      "activityRequired": "Activity type is required."
+    },
+    "success": {
+      "title": "Entry Saved",
+      "message": "Your entry has been successfully saved."
+    },
+    "activityType": "Activity Type",
+    "partner": "Partner",
+    "partnerPlaceholder": "Select Partner",
+    "duration": "Duration",
+    "durationPlaceholder": "Enter duration (minutes)",
+    "satisfaction": "Satisfaction",
+    "notes": "Notes",
+    "notesPlaceholder": "Add any notes...",
+    "save": "Save"
+  },
+  "history": {
+    "time": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "delete": {
+      "title": "Delete Entry",
+      "message": "Are you sure you want to delete this entry?",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "empty": {
+      "title": "No Entries Yet",
+      "subtitle": "Start by adding your first entry!",
+      "subtitlePeriod": "No entries for this period.",
+      "subtitleMonth": "No entries for this month."
+    },
+    "filters": {
+      "all": "All",
+      "week": "Week",
+      "month": "Month"
+    }
+  },
+  "home": {
+    "greetings": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "title": "Your Ritual",
+    "subtitle": "How are you doing today?",
+    "stats": {
+      "total": "Total Entries",
+      "thisMonth": "This Month",
+      "average": "Average Satisfaction"
+    },
+    "addEntry": "Add New Entry",
+    "recentEntries": "Recent Entries",
+    "empty": {
+      "title": "No Recent Entries",
+      "subtitle": "Add an entry to see it here."
+    }
+  },
+  "common": {
+    "error": "Error",
+    "ok": "OK",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "confirm": "Confirm"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "label": "Language",
+      "changedTitle": "Language Changed",
+      "changedMessage": "The app language has been successfully changed."
+    },
+    "backup": {
+      "success": {
+        "title": "Backup created",
+        "message": "Your backup has been successfully created"
+      },
+      "create": "Create Backup"
+    },
+    "export": {
+      "title": "Export Data",
+      "shareMessage": "Share your Ritual data file.",
+      "shareTitle": "Export Ritual Data",
+      "success": {
+        "title": "Export Successful",
+        "message": "Your data has been successfully exported."
+      },
+      "error": {
+        "message": "There was an error exporting your data. Please try again."
+      }
+    },
+    "import": {
+      "title": "Import Data",
+      "confirmTitle": "Confirm Import",
+      "confirmMessage": "Importing data will overwrite your current data. Are you sure you want to continue?",
+      "success": {
+        "title": "Import Successful",
+        "message": "Your data has been successfully imported."
+      },
+      "error": {
+        "message": "There was an error importing your data. Please ensure the file is valid."
+      }
+    },
+    "reset": {
+      "confirmTitle": "Confirm Reset",
+      "confirmMessage": "This action will delete ALL your data and cannot be undone. Are you absolutely sure?",
+      "success": {
+        "title": "Data Reset",
+        "message": "All your data has been successfully reset."
+      },
+      "error": {
+        "message": "There was an error resetting data. Please try again."
+      },
+      "resetAll": "Reset All Data"
+    },
+    "general": {
+      "title": "General"
+    },
+    "notifications": {
+      "label": "Notifications"
+    },
+    "privacySecurity": {
+      "title": "Privacy and Security"
+    },
+    "privacy": {
+      "biometricAuth": "Biometric authentication"
+    },
+    "dataManagement": {
+      "title": "Data Management"
+    },
+    "dangerZone": {
+      "title": "Danger Zone"
+    },
+    "about": {
+      "title": "About",
+      "developer": "Developer",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    }
+  },
+  "statistics": {
+    "title": "Statistics",
+    "export": {
+      "title": "Export Statistics",
+      "message": "Export your statistics data to a file.",
+      "share": "Share Statistics"
+    },
+    "overview": {
+      "title": "Overview",
+      "totalEntries": "Total Entries",
+      "avgSatisfaction": "Avg. Satisfaction",
+      "currentStreak": "Current Streak",
+      "longestStreak": "Longest Streak"
+    },
+    "trends": {
+      "title": "Trends"
+    },
+    "activities": {
+      "title": "Activities"
+    },
+    "timeline": {
+      "title": "Timeline"
+    },
+    "partners": {
+      "title": "Partners"
+    },
+    "loading": "Loading statistics..."
+  }
+}

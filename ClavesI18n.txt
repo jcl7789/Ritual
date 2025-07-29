@@ -1,0 +1,121 @@
+﻿
+src\components\navigation\Navigation.tsx:61:        options={{ tabBarLabel: t('navigation.home') }}
+src\components\navigation\Navigation.tsx:66:        options={{ tabBarLabel: t('navigation.history') }}
+src\components\navigation\Navigation.tsx:87:          title: t('addEntry.title'),
+src\components\navigation\Navigation.tsx:99:          title: t('settings.title'),
+src\screens\AddEntryScreen.tsx:62:      Alert.alert(t('common.error'), t('addEntry.error.activityRequired'));
+src\screens\AddEntryScreen.tsx:78:      t('addEntry.success.title'),
+src\screens\AddEntryScreen.tsx:79:      t('addEntry.success.message'),
+src\screens\AddEntryScreen.tsx:82:          text: t('common.ok'),
+src\screens\AddEntryScreen.tsx:89:        t('common.error'),
+src\screens\AddEntryScreen.tsx:121:          <Text style={styles.sectionTitle}>{t('addEntry.activityType')}</Text>
+src\screens\AddEntryScreen.tsx:146:          <Text style={styles.sectionTitle}>{t('addEntry.partner')}</Text>
+src\screens\AddEntryScreen.tsx:153:                placeholder={t('addEntry.partnerPlaceholder')}
+src\screens\AddEntryScreen.tsx:164:          <Text style={styles.sectionTitle}>{t('addEntry.duration')}</Text>
+src\screens\AddEntryScreen.tsx:171:                placeholder={t('addEntry.durationPlaceholder')}
+src\screens\AddEntryScreen.tsx:182:          <Text style={styles.sectionTitle}>{t('addEntry.satisfaction')}</Text>
+src\screens\AddEntryScreen.tsx:195:          <Text style={styles.sectionTitle}>{t('addEntry.notes')}</Text>
+src\screens\AddEntryScreen.tsx:202:                placeholder={t('addEntry.notesPlaceholder')}
+src\screens\AddEntryScreen.tsx:219:          <Text style={styles.saveButtonText}>{t('addEntry.save')}</Text>
+src\screens\FirstLoadScreen.tsx:28:const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+src\screens\FirstLoadScreen.tsx:181:          t('onboarding.error.title') || 'Error',
+src\screens\FirstLoadScreen.tsx:182:          t('onboarding.error.profileIncomplete') || 'Please complete your profile before finishing.',
+src\screens\FirstLoadScreen.tsx:183:          [{ text: t('common.ok') || 'OK' }]
+src\screens\FirstLoadScreen.tsx:213:          t('onboarding.error.title') || 'Error',
+src\screens\FirstLoadScreen.tsx:214:          t('onboarding.error.message') || 'There was an error setting up the app. Please try again.',
+src\screens\FirstLoadScreen.tsx:217:              text: t('common.retry') || 'Retry',
+src\screens\FirstLoadScreen.tsx:234:        <Text style={styles.languageTitle}>{t('onboarding.selectLanguage')}</Text>
+src\screens\FirstLoadScreen.tsx:295:              placeholder={t('onboarding.profile.namePlaceholder')}
+src\screens\FirstLoadScreen.tsx:308:              placeholder={t('onboarding.profile.agePlaceholder')}
+src\screens\FirstLoadScreen.tsx:326:                  placeholder={t('onboarding.profile.partnerNamePlaceholder')}
+src\screens\FirstLoadScreen.tsx:346:          <Text style={styles.addPartnerText}>{t('onboarding.profile.addPartner')}</Text>
+src\screens\FirstLoadScreen.tsx:372:              {t('onboarding.enableBiometric')}
+src\screens\FirstLoadScreen.tsx:375:              {t('onboarding.biometricDescription')}
+src\screens\FirstLoadScreen.tsx:427:        <Text style={styles.headerTitle}>{t('onboarding.setup')}</Text>
+src\screens\FirstLoadScreen.tsx:461:            {t('onboarding.previous')}
+src\screens\FirstLoadScreen.tsx:481:                {t('onboarding.saving') || 'Saving...'}
+src\screens\FirstLoadScreen.tsx:488:                  ? t('onboarding.getStarted')
+src\screens\FirstLoadScreen.tsx:489:                  : t('onboarding.next')
+src\screens\HistoryScreen.tsx:62:      return t('history.time.today');
+src\screens\HistoryScreen.tsx:64:      return t('history.time.yesterday');
+src\screens\HistoryScreen.tsx:76:      t('history.delete.title'),
+src\screens\HistoryScreen.tsx:77:      t('history.delete.message'),
+src\screens\HistoryScreen.tsx:80:          text: t('history.delete.cancel'),
+src\screens\HistoryScreen.tsx:84:          text: t('history.delete.confirm'),
+src\screens\HistoryScreen.tsx:91:                t('common.error'),
+src\screens\HistoryScreen.tsx:156:      <Text style={styles.emptyText}>{t('history.empty.title')}</Text>
+src\screens\HistoryScreen.tsx:159:          ? t('history.empty.subtitle')
+src\screens\HistoryScreen.tsx:160:          : selectedPeriod === 'week' ? t('history.empty.subtitlePeriod') : t('history.empty.subtitleMonth')
+src\screens\HistoryScreen.tsx:183:              {t('history.filters.all')}
+src\screens\HistoryScreen.tsx:198:              {t('history.filters.week')}
+src\screens\HistoryScreen.tsx:213:              {t('history.filters.month')}
+src\screens\HomeScreen.tsx:39:        greeting = t('home.greetings.morning');
+src\screens\HomeScreen.tsx:41:        greeting = t('home.greetings.afternoon');
+src\screens\HomeScreen.tsx:43:        greeting = t('home.greetings.evening');
+src\screens\HomeScreen.tsx:48:    return t('home.title');
+src\screens\HomeScreen.tsx:57:          <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
+src\screens\HomeScreen.tsx:65:              accessibilityLabel={t('settings')}
+src\screens\HomeScreen.tsx:78:            <Text style={styles.statLabel}>{t('home.stats.total')}</Text>
+src\screens\HomeScreen.tsx:82:            <Text style={styles.statLabel}>{t('home.stats.thisMonth')}</Text>
+src\screens\HomeScreen.tsx:88:            <Text style={styles.statLabel}>{t('home.stats.average')}</Text>
+src\screens\HomeScreen.tsx:98:          <Text style={styles.addButtonText}>{t('home.addEntry')}</Text>
+src\screens\HomeScreen.tsx:103:          <Text style={styles.sectionTitle}>{t('home.recentEntries')}</Text>
+src\screens\HomeScreen.tsx:128:              <Text style={styles.emptyText}>{t('home.empty.title')}</Text>
+src\screens\HomeScreen.tsx:130:                {t('home.empty.subtitle')}
+src\screens\SettingsScreen.tsx:64:      Alert.alert(t('settings.language.changedTitle'), t('settings.language.changedMessage', { lng: lang }));
+src\screens\SettingsScreen.tsx:89:        t('settings.backup.success.title'),
+src\screens\SettingsScreen.tsx:90:        t('settings.backup.success.message')
+src\screens\SettingsScreen.tsx:94:        t('common.error'),
+src\screens\SettingsScreen.tsx:110:        message: t('settings.export.shareMessage'),
+src\screens\SettingsScreen.tsx:113:        dialogTitle: t('settings.export.shareTitle'),
+src\screens\SettingsScreen.tsx:115:      Alert.alert(t('settings.export.success.title'), t('settings.export.success.message'));
+src\screens\SettingsScreen.tsx:118:      Alert.alert(t('common.error'), t('settings.export.error.message', { error: err.message }));
+src\screens\SettingsScreen.tsx:124:      t('settings.import.confirmTitle'),
+src\screens\SettingsScreen.tsx:125:      t('settings.import.confirmMessage'),
+src\screens\SettingsScreen.tsx:128:          text: t('common.cancel'),
+src\screens\SettingsScreen.tsx:132:          text: t('common.continue'),
+src\screens\SettingsScreen.tsx:143:                Alert.alert(t('settings.import.success.title'), t('settings.import.success.message'));
+src\screens\SettingsScreen.tsx:149:              Alert.alert(t('common.error'), t('settings.import.error.message', { error: err.message }));
+src\screens\SettingsScreen.tsx:159:      t('settings.reset.confirmTitle'),
+src\screens\SettingsScreen.tsx:160:      t('settings.reset.confirmMessage'),
+src\screens\SettingsScreen.tsx:163:          text: t('common.cancel'),
+src\screens\SettingsScreen.tsx:167:          text: t('common.confirm'),
+src\screens\SettingsScreen.tsx:173:              Alert.alert(t('settings.reset.success.title'), t('settings.reset.success.message'));
+src\screens\SettingsScreen.tsx:176:              Alert.alert(t('common.error'), t('settings.reset.error.message', { error: err.message }));
+src\screens\SettingsScreen.tsx:190:          <Text style={styles.sectionTitle}>{t('settings.general.title')}</Text>
+src\screens\SettingsScreen.tsx:192:            <Text style={styles.settingLabel}>{t('settings.language.label')}</Text>
+src\screens\SettingsScreen.tsx:211:            <Text style={styles.settingLabel}>{t('settings.notifications.label')}</Text>
+src\screens\SettingsScreen.tsx:224:          <Text style={styles.sectionTitle}>{t('settings.privacySecurity.title')}</Text>
+src\screens\SettingsScreen.tsx:226:            <Text style={styles.settingLabel}>{t('settings.privacy.biometricAuth')}</Text>
+src\screens\SettingsScreen.tsx:239:          <Text style={styles.sectionTitle}>{t('settings.dataManagement.title')}</Text>
+src\screens\SettingsScreen.tsx:242:            <Text style={styles.actionButtonText}>{t('settings.backup.create')}</Text>
+src\screens\SettingsScreen.tsx:247:            <Text style={styles.actionButtonText}>{t('settings.export.title')}</Text>
+src\screens\SettingsScreen.tsx:252:            <Text style={styles.actionButtonText}>{t('settings.import.title')}</Text>
+src\screens\SettingsScreen.tsx:259:          <Text style={styles.sectionTitle}>{t('settings.dangerZone.title')}</Text>
+src\screens\SettingsScreen.tsx:262:            <Text style={[styles.actionButtonText, styles.resetButtonText]}>{t('settings.reset.resetAll')}</Text>
+src\screens\SettingsScreen.tsx:269:          <Text style={styles.sectionTitle}>{t('settings.about.title')}</Text>
+src\screens\SettingsScreen.tsx:271:          <Text style={styles.aboutText}>{t('settings.about.developer')}</Text>
+src\screens\SettingsScreen.tsx:273:            <Text style={styles.linkText}>{t('settings.about.privacyPolicy')}</Text>
+src\screens\SettingsScreen.tsx:276:            <Text style={styles.linkText}>{t('settings.about.termsOfService')}</Text>
+src\screens\StatisticsScreen.tsx:20:const { width: screenWidth } = Dimensions.get('window');
+src\screens\StatisticsScreen.tsx:111:        t('statistics.export.title'),
+src\screens\StatisticsScreen.tsx:112:        t('statistics.export.message'),
+src\screens\StatisticsScreen.tsx:114:          { text: t('common.cancel'), style: 'cancel' },
+src\screens\StatisticsScreen.tsx:116:            text: t('statistics.export.share'), 
+src\screens\StatisticsScreen.tsx:125:      Alert.alert(t('common.error'), 'Failed to export statistics');
+src\screens\StatisticsScreen.tsx:156:        <Text style={styles.cardTitle}>{t('statistics.overview.title')}</Text>
+src\screens\StatisticsScreen.tsx:161:            <Text style={styles.statLabel}>{t('statistics.overview.totalEntries')}</Text>
+src\screens\StatisticsScreen.tsx:168:            <Text style={styles.statLabel}>{t('statistics.overview.avgSatisfaction')}</Text>
+src\screens\StatisticsScreen.tsx:173:            <Text style={styles.statLabel}>{t('statistics.overview.currentStreak')}</Text>
+src\screens\StatisticsScreen.tsx:178:            <Text style={styles.statLabel}>{t('statistics.overview.longestStreak')}</Text>
+src\screens\StatisticsScreen.tsx:199:        <Text style={styles.cardTitle}>{t('statistics.trends.title')}</Text>
+src\screens\StatisticsScreen.tsx:247:        <Text style={styles.cardTitle}>{t('statistics.activities.title')}</Text>
+src\screens\StatisticsScreen.tsx:308:        <Text style={styles.cardTitle}>{t('statistics.timeline.title')}</Text>
+src\screens\StatisticsScreen.tsx:327:        <Text style={styles.cardTitle}>{t('statistics.partners.title')}</Text>
+src\screens\StatisticsScreen.tsx:374:          <Text style={styles.loadingText}>{t('statistics.loading')}</Text>
+src\screens\StatisticsScreen.tsx:384:        <Text style={styles.title}>{t('statistics.title')}</Text>
+src\services\storage\BackupService.ts:98:      const timestamp = new Date().toISOString().split('T')[0];
+src\services\storage\BackupService.ts:349:      const filePath = `${this.BACKUP_DIR}ritual_backup_${backup.createdAt.toISOString().split('T')[0]}_${backup.id.substring(0, 8)}.rbk`;
+src\services\validation\ValidationService.ts:187:    const pathParts = path.split('.');
+
+

@@ -5,8 +5,8 @@ import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 
 // Importar traducciones
-import enCommon from './en/common.json';
-import esCommon from './es/common.json';
+import enCommon from './en-common.json';
+import esCommon from './es-common.json';
 
 // Recursos de traducciones
 const resources = {
