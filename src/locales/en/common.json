@@ -152,60 +152,65 @@
   },
   "settings": {
     "title": "Settings",
-    "appStats": {
-      "title": "App statistics",
-      "totalEntries": "Total entries",
-      "thisMonth": "This month",
-      "lastActivity": "Last activity"
+        "general": {
+      "title": "General"
     },
     "language": {
-      "title": "Language"
+      "label": "Language"
+    },
+    "privacySecurity": {
+      "title": "Privacy and Security"
+    },
+    "privacy": {
+      "biometricAuth": "Biometric authentication"
+    },
+    "reset": {
+      "resetAll": "Reset All"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "developer": "Developer",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    },
+    "appStats": {
+      "title": "App Statistics",
+      "totalEntries": "Total Entries",
+      "thisMonth": "This Month",
+      "lastActivity": "Last Activity"
     },
     "notifications": {
-      "title": "Notifications",
-      "enabled": "Enable notifications"
+      "label": "Notifications"
     },
     "dataManagement": {
-      "title": "Data & Backup"
+      "title": "Data and Backup"
     },
     "backup": {
-      "title": "Create backup",
-      "subtitle": "Save a backup of your data",
       "success": {
         "title": "Backup created",
-        "message": "Your backup was created successfully"
-      }
+        "message": "Your backup has been successfully created"
+      },
+      "create": "Create Backup"
     },
     "export": {
-      "title": "Export data",
-      "subtitle": "Export your data to a file",
-      "shareTitle": "Share exported data"
+      "title": "Exportar datos"
     },
     "import": {
-      "title": "Import data",
-      "subtitle": "Import data from a backup",
-      "confirmTitle": "Import data?",
-      "confirmMessage": "Are you sure you want to import data? This will overwrite your current data.",
-      "confirm": "Import",
-      "pasteTitle": "Paste backup data",
-      "pasteMessage": "Paste the encrypted backup data below.",
-      "success": {
-        "title": "Import successful",
-        "message": "Your data was imported successfully"
-      }
+      "title": "Importar datos"
     },
     "dangerZone": {
       "title": "Danger Zone"
     },
     "clearData": {
-      "title": "Delete all data",
-      "subtitle": "This will permanently delete all your entries and settings.",
+      "title": "Clear Data",
+      "subtitle": "This will delete all your data",
       "confirmTitle": "Are you sure?",
-      "confirmMessage": "This action cannot be undone. All your data will be deleted.",
-      "confirm": "Delete all",
+      "confirmMessage": "This action cannot be undone and will delete all your entries and settings.",
+      "confirm": "Execute Order 66: Clear Data",
       "success": {
-        "title": "Data deleted",
-        "message": "All your data has been deleted"
+        "title": "Data Cleared",
+        "message": "All your data has been successfully deleted"
       }
     }
   }

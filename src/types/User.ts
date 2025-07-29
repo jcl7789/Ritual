@@ -10,11 +10,9 @@ export interface User {
 export interface UserProfile {
   name: string;
   age: number;
-  partners: Partner[];
-  actualPartner: number;
-  language: 'en' | 'es';
+  partners?: Partner[];
+  actualPartner?: number;
   biometricEnabled: boolean;
-  
 }
 
 export interface Partner {

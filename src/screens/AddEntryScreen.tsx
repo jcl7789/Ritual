@@ -37,7 +37,7 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
   const [selectedSatisfaction, setSelectedSatisfaction] = useState<number | null>(null);
 
   const getActualPartner = (): string => {
-    if (user?.profile?.actualPartner) {
+    if (user?.profile?.actualPartner !== undefined && user.profile.partners) {
       return user.profile.partners[user.profile.actualPartner]?.name ?? '';
     }
     return '';
@@ -52,8 +52,8 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
 
    // Actualizar el valor por defecto cuando el perfil de usuario cambie
   useEffect(() => {
-    if (user?.profile?.actualPartner) {
-      setValue('partner', user.profile.partners[user.profile.actualPartner]?.name ?? '');
+    if (user?.profile?.actualPartner !== undefined && user.profile.partners) {
+      setValue('partner', user?.profile?.partners[user.profile.actualPartner]?.name ?? '');
     }
   }, [user, setValue]);
 

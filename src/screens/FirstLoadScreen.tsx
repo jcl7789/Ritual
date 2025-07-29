@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, use } from 'react';
 import {
   View,
   Text,
@@ -18,11 +18,12 @@ import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppDispatch } from '../store/store';
-import { completeOnboarding, updateLanguage, updatePrivacy } from '../store/slices/settingsSlice';
+import { AppSettings, completeOnboarding, PrivacySettings, updateLanguage, updatePrivacy } from '../store/slices/settingsSlice';
 import CountryFlag from 'react-native-country-flag';
 import { getDeviceLanguage } from '../locales/i18n';
 import { UserProfile } from '../types';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { id } from 'date-fns/locale';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -45,15 +46,6 @@ const onboardingSteps: OnboardingStep[] = [
     icon: 'heart-outline',
     color: '#6366f1',
     gradient: ['#6366f1', '#8b5cf6']
-  },
-  {
-    id: 'profile',
-    title: 'onboarding.profile.title',
-    subtitle: 'onboarding.profile.subtitle',
-    description: 'onboarding.profile.description',
-    icon: 'shield-checkmark-outline',
-    color: '#050f96ff',
-    gradient: ['#050f96ff', '#1b27c7ff']
   },
   {
     id: 'privacy',
@@ -81,11 +73,25 @@ const onboardingSteps: OnboardingStep[] = [
     icon: 'star-outline',
     color: '#d97706',
     gradient: ['#d97706', '#f59e0b']
+  },
+  {
+    id: 'profile',
+    title: 'onboarding.profile.title',
+    subtitle: 'onboarding.profile.subtitle',
+    description: 'onboarding.profile.description',
+    icon: 'shield-checkmark-outline',
+    color: '#050f96ff',
+    gradient: ['#050f96ff', '#1b27c7ff']
   }
 ];
 
 interface FirstLoadProps {
   onComplete: (userProfile: UserProfile) => void;
+}
+
+interface OnBoardingFormData {
+  profile: UserProfile
+  settings: AppSettings
 }
 
 export default function FirstLoad({ onComplete }: FirstLoadProps) {
@@ -98,45 +104,36 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const [isCompleting, setIsCompleting] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
-  // Refs deben estar al nivel del componente
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const {
-    register,
     handleSubmit,
     control,
-    reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<OnBoardingFormData>({
     defaultValues: {
-      name: '',
-      age: 0,
-      partners: [{ id: '', name: '' }],
-      actualPartner: 0,
-      language: selectedLanguage,
-      biometricEnabled: enableBiometric,
+      profile: {
+        name: '',
+        age: undefined,
+        biometricEnabled: false,
+      },
+      settings: {
+        privacy: {
+          requireAuth: false,
+          authMethod: 'none',
+        },
+        language: getDeviceLanguage() as 'en' | 'es',
+      },
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'partners',
+    name: 'profile.partners',
   });
 
-  const onProfileSubmit = (data: UserProfile) => {
-    setUserProfile({
-      ...data,
-      partners: data.partners
-        .filter(partner => partner.name.trim() !== '') // Filtra los partners sin nombre
-        .map(partner => ({
-          ...partner,
-          id: partner.id || crypto.randomUUID(), // Genera un UUID si no existe un ID
-        })),
-    });
-  };
-
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < onboardingSteps.length - 1) {
       // Animación de transición
       Animated.timing(fadeAnim, {
@@ -154,7 +151,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
         }).start();
       });
     } else {
-      handleComplete();
+      handleSubmit(handleComplete)(); // Completar el onboarding
     }
   };
 
@@ -177,72 +174,55 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
     }
   };
 
-  const handleComplete = async () => {
-    if (isCompleting) return; // Prevenir múltiples ejecuciones
-
-    setIsCompleting(true);
-
-    try {
-      // 1. Aplicar configuración de idioma
-      await dispatch(updateLanguage(selectedLanguage)).unwrap();
-
-      // 2. Aplicar configuración de privacidad si está habilitada
-      if (enableBiometric) {
-        await dispatch(updatePrivacy({
-          requireAuth: true,
-          authMethod: 'biometric'
-        })).unwrap();
+  const handleComplete: SubmitHandler<OnBoardingFormData> = async (formData) => {
+    if (currentStep === 4) {
+      if (errors.profile?.name?.type === 'required' || errors.profile?.age?.type === 'required') {
+        Alert.alert(
+          t('onboarding.error.title') || 'Error',
+          t('onboarding.error.profileIncomplete') || 'Please complete your profile before finishing.',
+          [{ text: t('common.ok') || 'OK' }]
+        );
+        return;
       }
 
-      // 3. Marcar onboarding como completado
-      await dispatch(completeOnboarding()).unwrap();
+      if (isCompleting) return; // Prevenir múltiples ejecuciones
+      setIsCompleting(true);
 
-      // 4. Callback para indicar que se completó (esto actualizará el estado en App)
-      const finalUserProfile: UserProfile = userProfile || {
-        name: '',
-        age: 0,
-        partners: [],
-        actualPartner: 0,
-        language: selectedLanguage,
-        biometricEnabled: enableBiometric
-      };
+      try {
+        // 1. Aplicar configuración de idioma
+        await dispatch(updateLanguage(selectedLanguage)).unwrap();
 
-      onComplete(finalUserProfile);
+        // 2. Aplicar configuración de privacidad si está habilitada
+        if (enableBiometric) {
+          await dispatch(updatePrivacy({
+            requireAuth: formData.settings.privacy.requireAuth,
+            authMethod: 'biometric',
+          })).unwrap();
+        }
 
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
+        // 3. Marcar onboarding como completado
+        await dispatch(completeOnboarding()).unwrap();
 
-      // Mostrar error al usuario
-      Alert.alert(
-        t('onboarding.error.title') || 'Error',
-        t('onboarding.error.message') || 'There was an error setting up the app. Please try again.',
-        [
-          {
-            text: t('common.retry') || 'Retry',
-            onPress: () => {
-              setIsCompleting(false);
-              handleComplete();
+        // 4. Callback para indicar que se completó (esto actualizará el estado en App)
+        await onComplete(formData.profile);
+      } catch (error) {
+        console.error('Error completing onboarding:', error);
+
+        // Mostrar error al usuario
+        Alert.alert(
+          t('onboarding.error.title') || 'Error',
+          t('onboarding.error.message') || 'There was an error setting up the app. Please try again.',
+          [
+            {
+              text: t('common.retry') || 'Retry',
+              onPress: () => {
+                setIsCompleting(false);
+                handleComplete(formData);
+              }
             }
-          },
-          {
-            text: t('common.continue') || 'Continue anyway',
-            onPress: () => {
-              // Continuar de todas formas
-              const finalUserProfile: UserProfile = userProfile || {
-                name: '',
-                age: 0,
-                partners: [],
-                actualPartner: 0,
-                language: selectedLanguage,
-                biometricEnabled: enableBiometric
-              };
-              onComplete(finalUserProfile);
-            }
-          }
-        ]
-      );
-    } finally {
-      setIsCompleting(false);
+          ]
+        );
+      }
     }
   };
 
@@ -302,13 +282,13 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   };
 
   const renderProfileForm = () => {
-    if (currentStep !== 1) return null;
+    if (currentStep !== 4) return null;
     return (
       <View style={styles.profileForm}>
 
         <Controller
           control={control}
-          name="name"
+          name="profile.name"
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.textInput}
@@ -321,13 +301,13 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
         <Controller
           control={control}
-          name="age"
+          name="profile.age"
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.textInput}
               placeholder={t('onboarding.profile.agePlaceholder')}
               keyboardType="numeric"
-              
+
               value={value?.toString()}
               onChangeText={(text) => onChange(parseInt(text))}
             />
@@ -339,7 +319,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
           <View key={field.id} style={styles.partnerRow}>
             <Controller
               control={control}
-              name={`partners.${index}.name`}
+              name={`profile.partners.${index}.name`}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.partnerInput}
@@ -371,7 +351,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   }
 
   const renderBiometricOption = () => {
-    if (currentStep !== 2) return null;
+    if (currentStep !== 1) return null;
 
     return (
       <View style={styles.optionContainer}>
@@ -434,8 +414,8 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
         <Text style={styles.stepDescription}>{t(step.description)}</Text>
 
         {renderLanguageSelector()}
-        {renderProfileForm()}
         {renderBiometricOption()}
+        {renderProfileForm()}
       </Animated.View>
     </View>
   );

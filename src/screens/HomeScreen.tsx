@@ -56,14 +56,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <Text style={styles.title}>{getGreeting()}</Text>
           <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
 
-          {/* Language Switcher */}
 
+          {/* Settings button */}
           <View style={styles.settingsContainer}>
-            {/* settings button */}
             <TouchableOpacity
               style={[styles.button, styles.activeButton]}
-              onPress={goToSettings} // Call changeLanguage with 'es' on press
-              accessibilityLabel={t('settings')} // Accessibility label for Spanish button
+              onPress={goToSettings}
+              accessibilityLabel={t('settings')}
             >
               <Ionicons name="settings" size={24} color={'white'} />
             </TouchableOpacity>

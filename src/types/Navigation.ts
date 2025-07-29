@@ -1,5 +1,5 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
-import { Entry } from '.';
+import { Entry, UserProfile } from '.';
 
 // Tipos para el stack principal de navegación
 export type RootStackParamList = {
@@ -35,7 +35,7 @@ export type HistoryScreenProps = {
 };
 
 export interface FirstLoadProps {
-  onComplete: () => void;
+  onComplete: (profile: UserProfile) => void;
 }
 
 // Tipos para componentes de navegación

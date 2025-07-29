@@ -27,9 +27,8 @@ function AppInitializer() {
   }, [dispatch, initialized]);
 
   const handleOnboardingComplete = async (profile: UserProfile) => {
-    console.log('Onboarding completed callback received');
     await storage.saveProfile(profile);
-    // No necesitas retornar nada aquí, solo actualizar el estado
+    dispatch(initializeApp());
   };
 
   // Pantalla de carga mientras se inicializa la app

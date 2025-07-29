@@ -13,7 +13,7 @@ export interface NotificationSettings {
 
 export interface PrivacySettings {
   requireAuth: boolean;
-  authMethod: 'biometric' | 'pin' | 'pattern';
+  authMethod: 'biometric' | 'pin' | 'pattern' | 'none';
   autoLock: boolean;
   autoLockTimeout: number; // seconds
   hideInRecents: boolean;

@@ -111,7 +111,6 @@ export const initializeUserProfile = createAsyncThunk(
             age: 0,
             partners: [], // Partner[] type
             actualPartner: 0,
-            language: 'en',
           },
         };
       } else {
@@ -124,7 +123,6 @@ export const initializeUserProfile = createAsyncThunk(
             age: 0,
             partners: [], // Partner[] type
             actualPartner: 0,
-            language: 'en',
             biometricEnabled: false, // Agregar campo por defecto
           },
         };
