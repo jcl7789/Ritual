@@ -19,7 +19,11 @@ repos:
       - id: eslint
         files: '\.(js|jsx|ts|tsx)$' # Solo lintear estos archivos
         args: [--fix] # Opcional: intenta auto-corregir problemas que ESLint pueda arreglar
-
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1 # Use the latest stable version
+    hooks:
+      - id: autoflake
+        args: [--remove-unused-variables, --in-place]
   # Hooks locales (para scripts específicos de tu proyecto)
   - repo: local
     hooks:

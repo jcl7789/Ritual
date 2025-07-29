@@ -123,7 +123,6 @@ export const initializeUserProfile = createAsyncThunk(
             age: 0,
             partners: [], // Partner[] type
             actualPartner: 0,
-            biometricEnabled: false, // Agregar campo por defecto
           },
         };
       }

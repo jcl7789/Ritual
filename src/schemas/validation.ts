@@ -1,17 +1,30 @@
 import * as yup from 'yup';
 
+// Schema para partner
+export const partnerSchema = yup.object().shape({
+  id: yup.string().required('partner.errors.id.required'),
+  name: yup.string().required('partner.errors.name.required'),
+});
+
 // Schema para perfil de usuario
 export const userProfileSchema = yup.object().shape({
   name: yup.string()
-    .required('El nombre es requerido')
-    .min(2, 'El nombre debe tener al menos 2 caracteres')
-    .max(50, 'El nombre no puede exceder los 50 caracteres'),
+    .required('userProfile.errors.name.required')
+    .min(2, 'userProfile.errors.name.min')
+    .max(50, 'userProfile.errors.name.max'),
   age: yup.number()
-    .required('La edad es requerida')
-    .positive('La edad debe ser un número positivo')
-    .integer('La edad debe ser un número entero')
-    .min(12, 'La edad mínima es 12 años')
-    .max(90, 'La edad máxima es 90 años'),
+    .required('userProfile.errors.age.required')
+    .positive('userProfile.errors.age.positive')
+    .integer('userProfile.errors.age.integer')
+    .min(12, 'userProfile.errors.age.min')
+    .max(90, 'userProfile.errors.age.max'),
+  partners: yup.array()
+    .of(partnerSchema)
+    .optional(),
+  actualPartner: yup.number()
+    .integer('userProfile.errors.actualPartner.integer')
+    .positive('userProfile.errors.actualPartner.positive')
+    .optional(),
 });
 
 // Schema para crear nueva entrada
@@ -83,7 +96,7 @@ export const userSettingsSchema = yup.object().shape({
   theme: yup.object({
     mode: yup.string()
       .oneOf(['light', 'dark', 'auto'], 'Invalid theme mode')
-      ,
+    ,
     primaryColor: yup.string().optional(),
     accentColor: yup.string().optional(),
   }),
@@ -107,7 +120,7 @@ export const userSettingsSchema = yup.object().shape({
     autoLockTimeout: yup.number().optional()
       .min(30, 'Auto-lock timeout must be at least 30 seconds')
       .max(3600, 'Auto-lock timeout cannot exceed 1 hour')
-      ,
+    ,
     hideInRecents: yup.boolean().optional(),
     privateMode: yup.boolean().optional(), // Agrega este si existe en AppSettings
   }).required('Privacy settings are required'),
@@ -143,9 +156,16 @@ export const importDataSchema = yup.object({
   }).required()
 });
 
+// Schema para onboarding
+export const onboardingSchema = yup.object({
+  profile: userProfileSchema,
+  settings: userSettingsSchema,
+})
+
 // Tipos derivados de los schemas
 export type CreateEntryFormData = yup.InferType<typeof createEntrySchema>;
 export type EntryFiltersFormData = yup.InferType<typeof entryFiltersSchema>;
 export type UserSettingsFormData = yup.InferType<typeof userSettingsSchema>;
 export type ImportDataFormData = yup.InferType<typeof importDataSchema>;
 export type UserProfileFormData = yup.InferType<typeof userProfileSchema>;
+export type OnboardingFormData = yup.InferType<typeof onboardingSchema>;

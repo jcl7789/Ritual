@@ -12,7 +12,6 @@ export interface UserProfile {
   age: number;
   partners?: Partner[];
   actualPartner?: number;
-  biometricEnabled: boolean;
 }
 
 export interface Partner {

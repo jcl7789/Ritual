@@ -197,5 +197,21 @@
     },
     "loading": "",
     "title": ""
+  },
+  "userProfile": {
+    "errors": {
+      "name": {
+        "required": "",
+        "min": "",
+        "max": ""
+      },
+      "age": {
+        "required": "",
+        "positive": "",
+        "integer": "",
+        "min": "",
+        "max": ""
+      }
+    }
   }
 }

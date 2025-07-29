@@ -236,5 +236,21 @@
       "title": "Parejas"
     },
     "loading": "Cargando estadísticas..."
+  },
+  "userProfile": {
+    "errors": {
+      "name": {
+        "required": "El nombre es requerido",
+        "min": "El nombre debe tener al menos {{min}} caracteres",
+        "max": "El nombre no puede exceder los {{max}} caracteres"
+      },
+      "age": {
+        "required": "La edad es requerida",
+        "positive": "La edad debe ser un número positivo",
+        "integer": "La edad debe ser un número entero",
+        "min": "La edad mínima es {{min}} años",
+        "max": "La edad máxima es {{max}} años"
+      }
+    }
   }
 }

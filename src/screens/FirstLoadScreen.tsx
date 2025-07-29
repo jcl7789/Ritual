@@ -1,4 +1,4 @@
-import React, { useState, useRef, use } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -18,13 +18,13 @@ import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppDispatch } from '../store/store';
-import { AppSettings, completeOnboarding, PrivacySettings, updateLanguage, updatePrivacy } from '../store/slices/settingsSlice';
+import { completeOnboarding, updateLanguage, updatePrivacy } from '../store/slices/settingsSlice';
 import CountryFlag from 'react-native-country-flag';
 import { getDeviceLanguage } from '../locales/i18n';
 import { UserProfile } from '../types';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { id } from 'date-fns/locale';
 import { ValidationService } from '../services/validation/ValidationService';
+import { OnboardingFormData } from '../schemas/validation';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -90,11 +90,6 @@ interface FirstLoadProps {
   onComplete: (userProfile: UserProfile) => void;
 }
 
-interface OnBoardingFormData {
-  profile: UserProfile
-  settings: AppSettings
-}
-
 export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
@@ -103,7 +98,6 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'es'>(getDeviceLanguage() as 'en' | 'es');
   const [enableBiometric, setEnableBiometric] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -112,12 +106,13 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<OnBoardingFormData>({
+    setError
+  } = useForm<OnboardingFormData>({
+    mode: 'onBlur',
     defaultValues: {
       profile: {
         name: '',
         age: undefined,
-        biometricEnabled: false,
       },
       settings: {
         privacy: {
@@ -181,7 +176,7 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
     }
   };
 
-  const handleComplete: SubmitHandler<OnBoardingFormData> = async (formData) => {
+  const handleComplete: SubmitHandler<OnboardingFormData> = async (formData) => {
     if (currentStep === 4) {
       if (errors.profile?.name?.type === 'required' || errors.profile?.age?.type === 'required') {
         Alert.alert(
@@ -198,7 +193,8 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
         Alert.alert(
           t('onboarding.error.title') || 'Error de Validación',
           `Errores en el perfil: ${JSON.stringify(profileValidationResult.errors)}`, // Mostrar errores de validación
-          [{ text: t('common.ok') || 'OK' }]
+          [{ text: t('common.ok') || 'OK' }],
+          { cancelable: false }
         );
         setIsCompleting(false);
         return;
@@ -206,7 +202,17 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
 
       const userSettingsValidationResult = await ValidationService.validateUserSettings(formData.settings);
       if (!userSettingsValidationResult.isValid) {
-        console.error('User settings validation errors:', userSettingsValidationResult.errors);
+        // Mostrar errores de validación de configuración
+        if (userSettingsValidationResult.errors) {
+          console.error('User settings validation errors:', userSettingsValidationResult.errors);
+          const { name, age } = userSettingsValidationResult.errors;
+          if (name) {
+            setError('profile.name', { type: 'manual', message: name as string });
+          }
+          if (age) {
+            setError('profile.age', { type: 'manual', message: age as string });
+          }
+        }
         Alert.alert(
           t('onboarding.error.title') || 'Error de Validación',
           `Errores en la configuración: ${JSON.stringify(userSettingsValidationResult.errors)}`,
@@ -320,28 +326,39 @@ export default function FirstLoad({ onComplete }: FirstLoadProps) {
         <Controller
           control={control}
           name="profile.name"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.textInput}
-              placeholder={t('onboarding.profile.namePlaceholder')}
-              value={value}
-              onChangeText={onChange}
-            />
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <>
+              <TextInput
+                style={styles.textInput}
+                placeholder={t('onboarding.profile.namePlaceholder')}
+                value={value}
+                onChangeText={onChange}
+              />
+              {error && (<Text style={styles.formSubtitle}>
+                {t(error.message || '')}
+              </Text>
+              )}
+            </>
           )}
         />
 
         <Controller
           control={control}
           name="profile.age"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.textInput}
-              placeholder={t('onboarding.profile.agePlaceholder')}
-              keyboardType="numeric"
-
-              value={value?.toString()}
-              onChangeText={(text) => onChange(parseInt(text))}
-            />
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <>
+              <TextInput
+                style={styles.textInput}
+                placeholder={t('onboarding.profile.agePlaceholder')}
+                keyboardType="numeric"
+                value={value?.toString() || undefined}
+                onChangeText={(text) => onChange(parseInt(text))}
+              />
+              {error && (<Text style={styles.formSubtitle}>
+                {t(error.message || '')}
+              </Text>
+              )}
+            </>
           )}
         />
 
@@ -569,6 +586,7 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     width: screenWidth,
+    height: screenHeight - 150, // Ajustar según el header y la navegación
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

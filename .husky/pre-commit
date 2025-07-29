@@ -1,2 +1,4 @@
+#!/bin/sh
+
 npx lint-staged || exit 1 # El '|| exit 1' hace que el commit falle si lint-staged tiene errores
 npx pre-commit run --all-files || exit 1

@@ -236,5 +236,21 @@
       "title": "Partners"
     },
     "loading": "Loading statistics..."
+  },
+  "userProfile": {
+    "errors": {
+      "name": {
+        "required": "Name is required",
+        "min": "Name must be at least {{min}} characters",
+        "max": "Name cannot exceed {{max}} characters"
+      },
+      "age": {
+        "required": "Age is required",
+        "positive": "Age must be a positive number",
+        "integer": "Age must be an integer",
+        "min": "Minimum age is {{min}} years",
+        "max": "Maximum age is {{max}} years"
+      }
+    }
   }
 }
